@@ -123,6 +123,7 @@ export default {
         syncDiscussionMarkers(newContent, false);
       }
       store.dispatch('content/patchCurrent', newContent);
+      store.dispatch('updateCode', { code: newContent.text });
       isChangePatch = false;
     });
     clEditor.addMarker(newDiscussionMarker0);
