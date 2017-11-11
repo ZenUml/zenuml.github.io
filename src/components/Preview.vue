@@ -1,7 +1,7 @@
 <template>
   <div class="preview">
     <seq-diagram></seq-diagram>
-    <div class="preview__inner-1" @click="onClick" @scroll="onScroll">
+    <div class="preview__inner-1" style="display: none;" @click="onClick" @scroll="onScroll">
       <div class="preview__inner-2" :style="{padding: styles.previewPadding}">
       </div>
     </div>
