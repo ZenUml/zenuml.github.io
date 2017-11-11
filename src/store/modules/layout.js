@@ -79,7 +79,7 @@ function computeStyles(state, localSettings, getters, styles = {
   const bottomPadding = Math.floor(styles.innerHeight / 2);
   const panelWidth = Math.floor(doublePanelWidth / 2);
   styles.previewWidth = styles.showSidePreview ?
-    panelWidth :
+    panelWidth * 0.66 * 2 :
     styles.innerWidth;
   const previewLeftPadding = Math.max(
     Math.floor((styles.previewWidth - styles.textWidth) / 2), minPadding);
@@ -89,7 +89,7 @@ function computeStyles(state, localSettings, getters, styles = {
   }
   styles.previewPadding = `${editorTopPadding}px ${previewRightPadding}px ${bottomPadding}px ${previewLeftPadding}px`;
   styles.editorWidth = styles.showSidePreview ?
-    panelWidth :
+    panelWidth * 0.34 * 2 :
     doublePanelWidth;
   const editorSidePadding = Math.max(
     Math.floor((styles.editorWidth - styles.textWidth) / 2), minPadding);
