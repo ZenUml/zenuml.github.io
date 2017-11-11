@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import 'vue-sequence/dist/vue-sequence.css';
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 import './extensions/';
 import './services/optional';
@@ -32,8 +33,10 @@ if (localStorage.updated) {
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
-new Vue({
+window.app = new Vue({
   el: '#app',
   store,
   render: h => h(App),
 });
+
+store.commit('code', 'A.method { B.methodB }');

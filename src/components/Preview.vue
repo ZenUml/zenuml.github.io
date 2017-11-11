@@ -1,5 +1,6 @@
 <template>
   <div class="preview">
+    <seq-diagram></seq-diagram>
     <div class="preview__inner-1" @click="onClick" @scroll="onScroll">
       <div class="preview__inner-2" :style="{padding: styles.previewPadding}">
       </div>
@@ -15,6 +16,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { SeqDiagram } from 'vue-sequence';
 
 const appUri = `${window.location.protocol}//${window.location.host}`;
 
@@ -22,6 +24,9 @@ export default {
   data: () => ({
     previewTop: true,
   }),
+  components: {
+    SeqDiagram,
+  },
   computed: mapGetters('layout', [
     'styles',
   ]),

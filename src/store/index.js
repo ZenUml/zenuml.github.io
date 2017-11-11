@@ -1,6 +1,7 @@
 import createLogger from 'vuex/dist/logger';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { Store } from 'vue-sequence';
 import utils from '../services/utils';
 import contentState from './modules/contentState';
 import syncedContent from './modules/syncedContent';
@@ -101,6 +102,7 @@ const store = new Vuex.Store({
     notification,
     queue,
     userInfo,
+    Store,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],
