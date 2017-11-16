@@ -67,7 +67,7 @@ function Highlighter(editor) {
     if (this.isComposing) {
       return sectionList
     }
-
+    // sectionParser is commented out in editorSvc; return the whole content as one section.
     var newSectionList = editor.options.sectionParser ? editor.options.sectionParser(content) : [content]
     newSectionList = newSectionList.cl_map(function (sectionText) {
       return new Section(sectionText)

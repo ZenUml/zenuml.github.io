@@ -1,6 +1,6 @@
 <template>
-  <div class="editor">
-    <pre class="editor__inner markdown-highlighting" :style="{padding: styles.editorPadding}" :class="{monospaced: computedSettings.editor.monospacedFontOnly}"></pre>
+  <div class="editor prism">
+    <pre class="editor__inner" :style="{padding: styles.editorPadding}" :class="{monospaced: true}"></pre>
   </div>
 </template>
 
@@ -22,6 +22,7 @@ export default {
 
 <style lang="scss">
 @import 'common/variables.scss';
+@import 'common/prism';
 
 .editor {
   position: absolute;

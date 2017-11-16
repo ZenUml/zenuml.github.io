@@ -6,7 +6,7 @@ import cledit from '../libs/cledit';
 import pagedown from '../libs/pagedown';
 import htmlSanitizer from '../libs/htmlSanitizer';
 import markdownConversionSvc from './markdownConversionSvc';
-import markdownGrammarSvc from './markdownGrammarSvc';
+// import markdownGrammarSvc from './markdownGrammarSvc';
 import sectionUtils from './sectionUtils';
 import extensionSvc from './extensionSvc';
 import animationSvc from './animationSvc';
@@ -40,7 +40,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
   // Other objects
   pagedownEditor: null,
   options: null,
-  prismGrammars: null,
+  // prismGrammars: null, // NOT used anymore, always use javascript
   converter: null,
   parsingCtx: null,
   conversionCtx: null,
@@ -151,11 +151,12 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
    * Initialize the Prism grammar with the options
    */
   initPrism() {
-    const options = {
-      ...this.options,
-      insideFences: markdownConversionSvc.defaultOptions.insideFences,
-    };
-    this.prismGrammars = markdownGrammarSvc.makeGrammars(options);
+    // NOT used anymore, always use javascript
+    // const options = {
+    //   ...this.options,
+    //   insideFences: markdownConversionSvc.defaultOptions.insideFences,
+    // this.prismGrammars = markdownGrammarSvc.makeGrammars(options);
+    // };
   },
 
   /**
@@ -171,11 +172,12 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
   initClEditor() {
     const options = {
       sectionHighlighter: section => Prism.highlight(
-        section.text, this.prismGrammars[section.data]),
-      sectionParser: (text) => {
-        this.parsingCtx = markdownConversionSvc.parseSections(this.converter, text);
-        return this.parsingCtx.sections;
-      },
+        section.text, Prism.languages.javascript),
+      // hide sectionParser, so that cleditHighlighter.parserSections returns only one section.
+      // sectionParser: (text) => {
+      //   this.parsingCtx = markdownConversionSvc.parseSections(this.converter, text);
+      //   return this.parsingCtx.sections;
+      // },
       getCursorFocusRatio: () => {
         if (store.getters['data/localSettings'].focusMode) {
           return 1;
@@ -480,18 +482,18 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
     this.editorElt.parentNode.addEventListener('scroll', () => this.saveContentState(true));
     this.previewElt.parentNode.addEventListener('scroll', () => this.saveContentState(true));
 
-    const refreshPreview = () => {
-      this.convert();
-      if (instantPreview) {
-        this.refreshPreview();
-        this.measureSectionDimensions(false, true);
-      } else {
-        setTimeout(() => this.refreshPreview(), 10);
-      }
-      instantPreview = false;
-    };
+    // const refreshPreview = () => {
+    //   this.convert();
+    //   if (instantPreview) {
+    //     this.refreshPreview();
+    //     this.measureSectionDimensions(false, true);
+    //   } else {
+    //     setTimeout(() => this.refreshPreview(), 10);
+    //   }
+    //   instantPreview = false;
+    // };
 
-    const debouncedRefreshPreview = debounce(refreshPreview, 20);
+    // const debouncedRefreshPreview = debounce(refreshPreview, 20);
 
     const onEditorChanged =
       (sectionList = this.sectionList, selectionRange = this.selectionRange) => {
@@ -499,9 +501,10 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
           this.sectionList = sectionList;
           this.$emit('sectionList', this.sectionList);
           if (instantPreview) {
-            refreshPreview();
+            // TODO: update diagram? or may be just trigger
+            // refreshPreview();
           } else {
-            debouncedRefreshPreview();
+            // debouncedRefreshPreview();
           }
         }
         if (this.selectionRange !== selectionRange) {
