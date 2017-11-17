@@ -67,7 +67,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(md|yml|html)$/,
+        test: /\.(md|seq|yml|html)$/,
         loader: 'raw-loader'
       }
     ]

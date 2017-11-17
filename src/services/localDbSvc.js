@@ -3,7 +3,8 @@ import 'indexeddbshim/dist/indexeddbshim';
 import FileSaver from 'file-saver';
 import utils from './utils';
 import store from '../store';
-import welcomeFile from '../data/welcomeFile.md';
+// import welcomeFile from '../data/welcomeFile.md';
+import getStarted from '../data/getStarted.seq';
 
 const indexedDB = window.indexedDB;
 const dbVersion = 1;
@@ -347,7 +348,8 @@ localDbSvc.sync()
         // If still no ID, create a new file
         .then(ifNoId(() => store.dispatch('createFile', {
           name: 'Welcome file',
-          text: welcomeFile,
+          // text: welcomeFile,
+          text: getStarted,
         })))
         .then((currentFile) => {
           // Fix current file ID
