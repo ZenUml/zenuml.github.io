@@ -37,9 +37,11 @@ shortcuts:
 # Default content for new files
 newFileContent: |
 
+  ZenUML.hello(world)
+  // Checkout more examples by clicking
+  // the top right corner button
 
-
-  > Written with [StackEdit](https://stackedit.io/).
+  // Powered by https://www.zenuml.com
 
 # Default properties for new files
 newFileProperties: |
