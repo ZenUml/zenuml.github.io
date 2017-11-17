@@ -2,7 +2,7 @@
   <div class="stat-panel panel no-overflow">
     <div class="stat-panel__block stat-panel__block--left" v-if="styles.showEditor">
       <span class="stat-panel__block-name">
-        Markdown
+        ZenUML
         <small v-if="textSelection">(selection)</small>
       </span>
       <span v-for="stat in textStats" :key="stat.id">
@@ -10,15 +10,15 @@
       </span>
       <span class="stat-panel__value">Ln {{line}}, Col {{column}}</span>
     </div>
-    <div class="stat-panel__block stat-panel__block--right">
-      <span class="stat-panel__block-name">
-        HTML
-        <small v-if="htmlSelection">(selection)</small>
-      </span>
-      <span v-for="stat in htmlStats" :key="stat.id">
-        <span class="stat-panel__value">{{stat.value}}</span> {{stat.name}}
-      </span>
-    </div>
+    <!--<div class="stat-panel__block stat-panel__block&#45;&#45;right">-->
+      <!--<span class="stat-panel__block-name">-->
+        <!--HTML-->
+        <!--<small v-if="htmlSelection">(selection)</small>-->
+      <!--</span>-->
+      <!--<span v-for="stat in htmlStats" :key="stat.id">-->
+        <!--<span class="stat-panel__value">{{stat.value}}</span> {{stat.name}}-->
+      <!--</span>-->
+    <!--</div>-->
   </div>
 </template>
 
