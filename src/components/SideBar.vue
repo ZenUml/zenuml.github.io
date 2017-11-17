@@ -1,9 +1,9 @@
 <template>
   <div class="side-bar flex flex--column">
     <div class="side-title flex flex--row">
-      <button v-if="panel !== 'menu'" class="side-title__button button" @click="setPanel('menu')" v-title="'Main menu'">
-        <icon-arrow-left></icon-arrow-left>
-      </button>
+      <!--<button v-if="panel !== 'menu'" class="side-title__button button" @click="setPanel('menu')" v-title="'Main menu'">-->
+        <!--<icon-arrow-left></icon-arrow-left>-->
+      <!--</button>-->
       <div class="side-title__title">
         {{panelName}}
       </div>
@@ -13,6 +13,7 @@
     </div>
     <div class="side-bar__inner">
       <main-menu v-if="panel === 'menu'"></main-menu>
+      <example-menu v-if="panel === 'example'"></example-menu>
       <sync-menu v-else-if="panel === 'sync'"></sync-menu>
       <publish-menu v-else-if="panel === 'publish'"></publish-menu>
       <export-menu v-else-if="panel === 'export'"></export-menu>
@@ -33,6 +34,7 @@ import { mapActions } from 'vuex';
 import Toc from './Toc';
 import MenuEntry from './menus/MenuEntry';
 import MainMenu from './menus/MainMenu';
+import ExampleMenu from './menus/ExampleMenu';
 import SyncMenu from './menus/SyncMenu';
 import PublishMenu from './menus/PublishMenu';
 import ExportMenu from './menus/ExportMenu';
@@ -42,6 +44,7 @@ import markdownConversionSvc from '../services/markdownConversionSvc';
 
 const panelNames = {
   menu: 'Menu',
+  example: 'Examples',
   help: 'Markdown cheat sheet',
   toc: 'Table of contents',
   sync: 'Synchronize',
@@ -55,6 +58,7 @@ export default {
     Toc,
     MenuEntry,
     MainMenu,
+    ExampleMenu,
     SyncMenu,
     PublishMenu,
     ExportMenu,
@@ -65,7 +69,8 @@ export default {
   }),
   computed: {
     panel() {
-      return this.$store.getters['data/localSettings'].sideBarPanel;
+      return 'example';
+      // return this.$store.getters['data/localSettings'].sideBarPanel;
     },
     panelName() {
       return panelNames[this.panel];
