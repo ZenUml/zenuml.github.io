@@ -1,8 +1,8 @@
 <template>
   <a href="javascript:void(0)" class="menu-entry button flex flex--row flex--align-center">
-    <div class="menu-entry__icon flex flex--column flex--center">
-      <slot name="icon"></slot>
-    </div>
+    <!--<div class="menu-entry__icon flex flex&#45;&#45;column flex&#45;&#45;center">-->
+      <!--<slot name="icon"></slot>-->
+    <!--</div>-->
     <div class="flex flex--column">
       <slot></slot>
     </div>
@@ -16,6 +16,10 @@
   text-align: left;
   padding: 10px;
   height: auto;
+
+  > div {
+    width: 100%;
+  }
 
   span {
     display: inline-block;

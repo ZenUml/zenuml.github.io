@@ -1,68 +1,56 @@
 <template>
   <div class="side-bar__panel side-bar__panel--menu">
-    <menu-entry v-if="!loginToken" @click.native="signin">
-      <icon-login slot="icon"></icon-login>
-      <div>Sign in with Google</div>
-      <span>Back up and sync all your files, folders and settings.</span>
-    </menu-entry>
-    <div v-else class="menu-entry flex flex--row flex--align-center">
-      <div class="menu-entry__icon menu-entry__icon--image">
-        <user-image :user-id="loginToken.sub"></user-image>
-      </div>
-      <span>Signed in as <b>{{loginToken.name}}</b>.</span>
-    </div>
-    <hr>
     <menu-entry @click.native="setPanel('sync')">
-      <icon-sync slot="icon"></icon-sync>
-      <div>Synchronize</div>
-      <span>Open, save, collaborate in the Cloud.</span>
-    </menu-entry>
-    <menu-entry @click.native="setPanel('publish')">
-      <icon-upload slot="icon"></icon-upload>
-      <div>Publish</div>
-      <span>Export to the web.</span>
-    </menu-entry>
-    <hr>
-    <menu-entry @click.native="fileProperties">
-      <icon-view-list slot="icon"></icon-view-list>
-      <div>File properties</div>
-      <span>Add metadata and configure extensions.</span>
-    </menu-entry>
-    <menu-entry @click.native="setPanel('toc')">
-      <icon-toc slot="icon"></icon-toc>
-      Table of contents
-    </menu-entry>
-    <menu-entry @click.native="setPanel('help')">
       <icon-help-circle slot="icon"></icon-help-circle>
-      Markdown cheat sheet
-    </menu-entry>
-    <hr>
-    <menu-entry @click.native="print">
-      <icon-printer slot="icon"></icon-printer>
-      Print
-    </menu-entry>
-    <input class="hidden-file" id="import-disk-file-input" type="file" @change="onImportFile">
-    <label class="menu-entry button flex flex--row flex--align-center" for="import-disk-file-input">
-      <div class="menu-entry__icon flex flex--column flex--center">
-        <icon-content-save></icon-content-save>
+
+      <div class="h3-section prism"><h3>Single</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="singleMessage"></pre>
+        </div>
       </div>
-      <div class="flex flex--column">
-        Import from disk
-      </div>
-    </label>
-    <menu-entry @click.native="setPanel('export')">
-      <icon-content-save slot="icon"></icon-content-save>
-      Export to disk
     </menu-entry>
-    <hr>
-    <menu-entry @click.native="setPanel('more')">
-      More...
+    <menu-entry @click.native="setPanel('sync')">
+      <icon-help-circle slot="icon"></icon-help-circle>
+
+      <div class="h3-section prism"><h3>Nested</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="nestedMessage"></pre>
+        </div>
+      </div>
+    </menu-entry>
+    <menu-entry @click.native="setPanel('sync')">
+      <icon-help-circle slot="icon"></icon-help-circle>
+
+      <div class="h3-section prism"><h3>Self</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="selfMessage"></pre>
+        </div>
+      </div>
+    </menu-entry>
+    <menu-entry @click.native="setPanel('sync')">
+      <icon-help-circle slot="icon"></icon-help-circle>
+
+      <div class="h3-section prism"><h3>Alt</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="altMessage"></pre>
+        </div>
+      </div>
+    </menu-entry>
+    <menu-entry @click.native="setPanel('sync')">
+      <icon-help-circle slot="icon"></icon-help-circle>
+
+      <div class="h3-section prism"><h3>Loop</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="loopMessage"></pre>
+        </div>
+      </div>
     </menu-entry>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Prism from 'prismjs';
 import MenuEntry from './MenuEntry';
 import UserImage from '../UserImage';
 import googleHelper from '../../services/providers/helpers/googleHelper';
@@ -78,6 +66,29 @@ export default {
     ...mapGetters('data', [
       'loginToken',
     ]),
+    singleMessage() {
+      return Prism.highlight('A.methodA(p1, p2)', Prism.languages.javascript);
+    },
+    nestedMessage() {
+      return Prism.highlight('A.methodA(p1, p2) {\n B.methodB(p3) \n}', Prism.languages.javascript);
+    },
+    selfMessage() {
+      return Prism.highlight('internalMethod(p1, p2)', Prism.languages.javascript);
+    },
+    altMessage() {
+      return Prism.highlight('if (condition1) {\n' +
+        '  A.methodA()\n' +
+        '} else (condition2) {\n' +
+        '  B.methodB()\n' +
+        '} else {\n' +
+        '  C.methodC()\n' +
+        '}', Prism.languages.javascript);
+    },
+    loopMessage() {
+      return Prism.highlight('while(condition) {\n' +
+        '  A.methodA()\n' +
+        '}', Prism.languages.javascript);
+    },
   },
   methods: {
     ...mapActions('data', {
@@ -119,3 +130,43 @@ export default {
   },
 };
 </script>
+
+
+
+<style lang="scss" scoped>
+
+pre {
+  margin: 0;
+}
+
+.h3-section > h3 {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: normal;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-se, serif;
+}
+
+.h3-section > h3::after {
+  margin-left: 24px;
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, rgba(116, 95, 181, 0.2), transparent 80%);
+}
+
+.h3-section > .body {
+  text-align: left;
+  background: white;
+  box-shadow: 0 6px 8px rgba(102, 119, 136, 0.03), 0 1px 2px rgba(102, 119, 136, 0.3);
+}
+
+.h3-section > .body > pre {
+  margin: 0;
+  padding: 16px;
+}
+
+</style>
