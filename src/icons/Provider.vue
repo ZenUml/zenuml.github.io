@@ -18,6 +18,10 @@ export default {
   background-size: contain;
 }
 
+.icon-provider--zenuml {
+  background-image: url(../assets/iconZenUML.png);
+}
+
 .icon-provider--stackedit {
   background-image: url(../assets/iconStackedit.svg);
 }
