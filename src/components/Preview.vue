@@ -126,8 +126,8 @@ export default {
 $corner-size: 110px;
 
 .preview__corner {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 45px;
   right: 0;
 
   &::before {

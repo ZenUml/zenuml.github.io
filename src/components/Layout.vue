@@ -164,7 +164,7 @@ $editor-background: #fff;
   }
 }
 
-$preview-background: #f3f3f3;
+$preview-background: #fafafa;
 
 .layout__panel--preview,
 .layout__panel--button-bar {
