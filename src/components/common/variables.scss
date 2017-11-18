@@ -1,0 +1,23 @@
+$font-family-main: Lato, 'Helvetica Neue', Helvetica, sans-serif;
+$font-family-monospace: 'Roboto Mono', 'Lucida Sans Typewriter', 'Lucida Console', monaco, Courrier, monospace;
+$line-height-base: 1.67;
+$line-height-title: 1.33;
+$font-size-monospace: 0.85em;
+$code-bg: rgba(0, 0, 0, 0.05);
+$highlighting-color: #ff0;
+$selection-highlighting-color: #ff9632;
+$info-bg: transparentize($selection-highlighting-color, 0.85);
+$code-border-radius: 2px;
+$link-color: #0c93e4;
+$error-color: #f20;
+$border-radius-base: 2px;
+$hr-color: rgba(128, 128, 128, 0.2);
+$navbar-color: rgba(255, 255, 255, 0.67);
+$navbar-hover-color: #fff;
+$navbar-hover-background: rgba(255, 255, 255, 0.1);
+
+$editor-color: rgba(0, 0, 0, 0.8);
+$editor-color-light: rgba(0, 0, 0, 0.28);
+$editor-color-dark: #000;
+$editor-font-weight-base: 400;
+$editor-font-weight-bold: 600;
