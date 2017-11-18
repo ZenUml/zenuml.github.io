@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#ver:11/18/2017, 8:19:34 PM
+#ver:11/18/2017, 8:32:22 PM
 #plugin:4.8.4
 
 CACHE:
@@ -14,7 +14,7 @@ CACHE:
 /dist/static/js/vendor.b62951685ad7ba9b9083.js
 /dist/static/js/app.a4f63224047b6e8e84d7.js
 /dist/static/js/manifest.f3895dd5ff1c9bc76652.js
-/dist/static/css/app.e01ab7c104623a1a3db64827b981ecac.css
+/dist/static/css/app.e5ff216bbac4f582fc4aca09384a48ed.css
 /dist/../
 /app
 /oauth2/callback
