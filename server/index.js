@@ -59,7 +59,7 @@ module.exports = (app, serveV4) => {
     }
 
     // Serve index.html in /app
-    app.get('/app', (req, res) => res.sendFile(resolvePath('dist/index.html')));
+    app.get('/app', (req, res) => res.sendFile(resolvePath('index.html')));
 
     // Serve style.css with 1 day max-age
     app.get('/style.css', (req, res) => res.sendFile(resolvePath('dist/style.css'), {
