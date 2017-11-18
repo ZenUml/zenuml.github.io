@@ -1,14 +1,24 @@
 <template>
   <div class="editor prism">
     <pre class="editor__inner" :style="{padding: styles.editorPadding}" :class="{monospaced: true}"></pre>
+    <!--<pre class="editor__inner markdown-highlighting" :style="{padding: styles.editorPadding}" :class="{monospaced: computedSettings.editor.monospacedFontOnly}"></pre>-->
+    <div class="gutter" :style="{left: styles.editorGutterLeft + 'px'}">
+      <comment-list v-if="styles.editorGutterWidth"></comment-list>
+      <editor-new-discussion-button></editor-new-discussion-button>
+    </div>
   </div>
 </template>
 
-
 <script>
 import { mapGetters } from 'vuex';
+import CommentList from './gutters/CommentList';
+import EditorNewDiscussionButton from './gutters/EditorNewDiscussionButton';
 
 export default {
+  components: {
+    CommentList,
+    EditorNewDiscussionButton,
+  },
   computed: {
     ...mapGetters('layout', [
       'styles',
@@ -16,6 +26,45 @@ export default {
     ...mapGetters('data', [
       'computedSettings',
     ]),
+  },
+  mounted() {
+    const editorElt = this.$el.querySelector('.editor__inner');
+    const onDiscussionEvt = cb => (evt) => {
+      let elt = evt.target;
+      while (elt && elt !== editorElt) {
+        if (elt.discussionId) {
+          cb(elt.discussionId);
+          return;
+        }
+        elt = elt.parentNode;
+      }
+    };
+
+    const classToggler = toggle => (discussionId) => {
+      editorElt.getElementsByClassName(`discussion-editor-highlighting--${discussionId}`)
+        .cl_each(elt => elt.classList.toggle('discussion-editor-highlighting--hover', toggle));
+      document.getElementsByClassName(`comment--discussion-${discussionId}`)
+        .cl_each(elt => elt.classList.toggle('comment--hover', toggle));
+    };
+
+    editorElt.addEventListener('mouseover', onDiscussionEvt(classToggler(true)));
+    editorElt.addEventListener('mouseout', onDiscussionEvt(classToggler(false)));
+    editorElt.addEventListener('click', onDiscussionEvt((discussionId) => {
+      this.$store.commit('discussion/setCurrentDiscussionId', discussionId);
+    }));
+
+    this.$watch(
+      () => this.$store.state.discussion.currentDiscussionId,
+      (discussionId, oldDiscussionId) => {
+        if (oldDiscussionId) {
+          editorElt.querySelectorAll(`.discussion-editor-highlighting--${oldDiscussionId}`)
+            .cl_each(elt => elt.classList.remove('discussion-editor-highlighting--selected'));
+        }
+        if (discussionId) {
+          editorElt.querySelectorAll(`.discussion-editor-highlighting--${discussionId}`)
+            .cl_each(elt => elt.classList.add('discussion-editor-highlighting--selected'));
+        }
+      });
   },
 };
 </script>
@@ -46,11 +95,6 @@ export default {
 
   .cledit-section {
     font-family: inherit;
-  }
-
-  .discussion-highlight,
-  .find-replace-highlight {
-    background-color: transparentize(#ffe400, 0.5);
   }
 
   .hide {

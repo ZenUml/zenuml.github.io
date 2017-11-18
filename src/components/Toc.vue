@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapGetters } from 'vuex';
 import editorSvc from '../services/editorSvc';
 
@@ -71,7 +70,7 @@ export default {
       }
     };
 
-    Vue.nextTick(() => {
+    this.$nextTick(() => {
       editorSvc.editorElt.parentNode.addEventListener('scroll', () => {
         if (this.styles.showEditor) {
           updateMaskY();
@@ -91,7 +90,7 @@ export default {
 .toc__inner {
   color: rgba(0, 0, 0, 0.75);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 9px;
   padding: 10px 20px 40px;
   white-space: nowrap;
   -webkit-user-select: none;
@@ -105,29 +104,39 @@ export default {
   }
 
   .cl-toc-section {
-    * {
-      margin: 0.2em 0;
-      padding: 0.2em 0;
-      border-bottom: 0;
+    h1,
+    h2 {
+      &::after {
+        display: none;
+      }
+    }
+
+    h1 {
+      margin: 1rem 0;
     }
 
     h2 {
+      margin: 0.5rem 0;
       margin-left: 8px;
     }
 
     h3 {
+      margin: 0.33rem 0;
       margin-left: 16px;
     }
 
     h4 {
+      margin: 0.22rem 0;
       margin-left: 24px;
     }
 
     h5 {
+      margin: 0.11rem 0;
       margin-left: 32px;
     }
 
     h6 {
+      margin: 0;
       margin-left: 40px;
     }
   }

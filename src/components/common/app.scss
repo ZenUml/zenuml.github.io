@@ -30,6 +30,16 @@ body {
   }
 }
 
+pre > code {
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.table-wrapper {
+  max-width: 100%;
+  overflow: auto;
+}
+
 button,
 input,
 select,
@@ -61,9 +71,9 @@ textarea {
   height: auto;
   padding: 6px 12px;
   margin-bottom: 0;
-  font-size: 18px;
   font-weight: 400;
   line-height: 1.4;
+  text-transform: uppercase;
   overflow: hidden;
   text-align: center;
   white-space: nowrap;
@@ -78,6 +88,7 @@ textarea {
   background-image: none;
   border: 0;
   border-radius: $border-radius-base;
+  text-decoration: none;
 
   &:active,
   &:focus,
@@ -194,6 +205,72 @@ textarea {
   //background: no-repeat center url('../assets/logo.svg');
   background: no-repeat center url('../assets/logo.png');
   background-size: contain;
+}
+
+.gutter {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+.gutter__background {
+  position: absolute;
+  height: 100%;
+  right: 0;
+}
+
+.new-discussion-button {
+  color: rgba(0, 0, 0, 0.33);
+  position: absolute;
+  left: 0;
+  padding: 1px;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+
+  &:active,
+  &:focus,
+  &:hover {
+    color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.discussion-editor-highlighting,
+.discussion-preview-highlighting {
+  background-color: mix(#fff, $selection-highlighting-color, 70%);
+  padding: 0.25em 0;
+}
+
+.discussion-editor-highlighting--hover,
+.discussion-preview-highlighting--hover {
+  background-color: mix(#fff, $selection-highlighting-color, 50%);
+
+  * {
+    background-color: transparent;
+  }
+}
+
+.discussion-editor-highlighting--selected,
+.discussion-preview-highlighting--selected {
+  background-color: mix(#fff, $selection-highlighting-color, 20%);
+
+  * {
+    background-color: transparent;
+  }
+}
+
+.discussion-preview-highlighting {
+  cursor: pointer;
+
+  &.discussion-preview-highlighting--selected {
+    cursor: auto;
+  }
+}
+
+.hidden-rendering-container {
+  position: absolute;
+  width: 500px;
+  left: -1000px;
 }
 
 @media print {

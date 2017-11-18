@@ -1,29 +1,46 @@
 <template>
   <div class="layout">
     <div class="layout__panel flex flex--row" :class="{'flex--end': styles.showSideBar}">
-      <div class="layout__panel layout__panel--explorer" v-show="styles.showExplorer" :aria-hidden="!styles.showExplorer" :style="{ width: constants.explorerWidth + 'px' }">
+      <div class="layout__panel layout__panel--explorer" v-show="styles.showExplorer" :aria-hidden="!styles.showExplorer" :style="{width: styles.layoutOverflow ? '100%' : constants.explorerWidth + 'px'}">
         <explorer></explorer>
       </div>
-      <div class="layout__panel flex flex--column" :style="{ width: styles.innerWidth + 'px' }">
-        <div class="layout__panel layout__panel--navigation-bar" v-show="styles.showNavigationBar" :style="{ height: constants.navigationBarHeight + 'px' }">
+      <div class="layout__panel flex flex--column" :style="{width: styles.innerWidth + 'px'}">
+        <div class="layout__panel layout__panel--navigation-bar" v-show="styles.showNavigationBar" :style="{height: constants.navigationBarHeight + 'px'}">
           <navigation-bar></navigation-bar>
         </div>
-        <div class="layout__panel flex flex--row" :style="{ height: styles.innerHeight + 'px' }">
-          <div class="layout__panel layout__panel--editor" v-show="styles.showEditor" :style="{ width: styles.editorWidth + 'px', 'font-size': styles.fontSize + 'px' }">
+        <div class="layout__panel flex flex--row" :style="{height: styles.innerHeight + 'px'}">
+          <div class="layout__panel layout__panel--editor" v-show="styles.showEditor" :style="{width: (styles.editorWidth + styles.editorGutterWidth) + 'px', fontSize: styles.fontSize + 'px'}">
+            <div class="gutter" :style="{left: styles.editorGutterLeft + 'px'}">
+              <div class="gutter__background" v-if="styles.editorGutterWidth" :style="{width: styles.editorGutterWidth + 'px'}"></div>
+            </div>
             <editor></editor>
+            <div class="gutter" :style="{left: styles.editorGutterLeft + 'px'}">
+              <sticky-comment v-if="styles.editorGutterWidth && stickyComment === 'top'"></sticky-comment>
+              <current-discussion v-if="styles.editorGutterWidth"></current-discussion>
+            </div>
+            <div class="layout__panel layout__panel--find-replace" v-if="showFindReplace">
+              <find-replace></find-replace>
+            </div>
           </div>
-          <div class="layout__panel layout__panel--button-bar" v-show="styles.showEditor" :style="{ width: constants.buttonBarWidth + 'px' }">
+          <div class="layout__panel layout__panel--button-bar" v-show="styles.showEditor" :style="{width: constants.buttonBarWidth + 'px'}">
             <button-bar></button-bar>
           </div>
-          <div class="layout__panel layout__panel--preview" v-show="styles.showPreview" :style="{ width: styles.previewWidth + 'px', 'font-size': styles.fontSize + 'px' }">
+          <div class="layout__panel layout__panel--preview" v-show="styles.showPreview" :style="{width: (styles.previewWidth + styles.previewGutterWidth) + 'px', fontSize: styles.fontSize + 'px'}">
+            <div class="gutter" :style="{left: styles.previewGutterLeft + 'px'}">
+              <div class="gutter__background" v-if="styles.previewGutterWidth" :style="{width: styles.previewGutterWidth + 'px'}"></div>
+            </div>
             <preview></preview>
+            <div class="gutter" :style="{left: styles.previewGutterLeft + 'px'}">
+              <sticky-comment v-if="styles.previewGutterWidth && stickyComment === 'top'"></sticky-comment>
+              <current-discussion v-if="styles.previewGutterWidth"></current-discussion>
+            </div>
           </div>
         </div>
-        <div class="layout__panel layout__panel--status-bar" v-show="styles.showStatusBar" :style="{ height: constants.statusBarHeight + 'px' }">
+        <div class="layout__panel layout__panel--status-bar" v-show="styles.showStatusBar" :style="{height: constants.statusBarHeight + 'px'}">
           <status-bar></status-bar>
         </div>
       </div>
-      <div class="layout__panel layout__panel--side-bar" v-show="styles.showSideBar" :style="{ width: constants.sideBarWidth + 'px' }">
+      <div class="layout__panel layout__panel--side-bar" v-show="styles.showSideBar" :style="{width: styles.layoutOverflow ? '100%' : constants.sideBarWidth + 'px'}">
         <side-bar></side-bar>
       </div>
     </div>
@@ -31,7 +48,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import NavigationBar from './NavigationBar';
 import ButtonBar from './ButtonBar';
 import StatusBar from './StatusBar';
@@ -39,6 +56,9 @@ import Explorer from './Explorer';
 import SideBar from './SideBar';
 import Editor from './Editor';
 import Preview from './Preview';
+import StickyComment from './gutters/StickyComment';
+import CurrentDiscussion from './gutters/CurrentDiscussion';
+import FindReplace from './FindReplace';
 import editorSvc from '../services/editorSvc';
 
 export default {
@@ -50,15 +70,24 @@ export default {
     SideBar,
     Editor,
     Preview,
+    StickyComment,
+    CurrentDiscussion,
+    FindReplace,
   },
   computed: {
+    ...mapState('discussion', [
+      'stickyComment',
+    ]),
     ...mapGetters('layout', [
       'constants',
       'styles',
     ]),
+    showFindReplace() {
+      return !!this.$store.state.findReplace.type;
+    },
   },
   methods: {
-    ...mapMutations('layout', [
+    ...mapActions('layout', [
       'updateBodySize',
     ]),
     saveSelection: () => editorSvc.saveSelection(true),
@@ -68,6 +97,7 @@ export default {
     window.addEventListener('resize', this.updateBodySize);
     window.addEventListener('keyup', this.saveSelection);
     window.addEventListener('mouseup', this.saveSelection);
+    window.addEventListener('focusin', this.saveSelection);
     window.addEventListener('contextmenu', this.saveSelection);
   },
   mounted() {
@@ -75,11 +105,16 @@ export default {
     const previewElt = this.$el.querySelector('.preview__inner-2');
     const tocElt = this.$el.querySelector('.toc__inner');
     editorSvc.init(editorElt, previewElt, tocElt);
+
+    // Focus on the editor every time reader mode is disabled
+    this.$watch(() => this.styles.showEditor,
+      showEditor => showEditor && editorSvc.clEditor.focus());
   },
   destroyed() {
     window.removeEventListener('resize', this.updateStyle);
     window.removeEventListener('keyup', this.saveSelection);
     window.removeEventListener('mouseup', this.saveSelection);
+    window.removeEventListener('focusin', this.saveSelection);
     window.removeEventListener('contextmenu', this.saveSelection);
   },
 };
@@ -99,6 +134,7 @@ export default {
   width: 100%;
   height: 100%;
   flex: none;
+  overflow: hidden;
 }
 
 .layout__panel--navigation-bar {
@@ -109,17 +145,59 @@ export default {
   background-color: #007acc;
 }
 
+$editor-background: #fff;
+
 .layout__panel--editor {
-  background-color: #fff;
+  background-color: $editor-background;
+
+  .gutter__background,
+  .comment-list__current-discussion,
+  .sticky-comment,
+  .current-discussion {
+    background-color: mix(#000, $editor-background, 6.7%);
+  }
+
+  .comment-list__current-discussion,
+  .sticky-comment,
+  .current-discussion {
+    border-color: $editor-background;
+  }
 }
 
-.layout__panel--button-bar,
+$preview-background: #f3f3f3;
+
+.layout__panel--preview,
+.layout__panel--button-bar {
+  background-color: $preview-background;
+}
+
 .layout__panel--preview {
-  background-color: #f3f3f3;
+  .gutter__background,
+  .comment-list__current-discussion,
+  .sticky-comment,
+  .current-discussion {
+    background-color: mix(#000, $preview-background, 6.7%);
+  }
+
+  .comment-list__current-discussion,
+  .sticky-comment,
+  .current-discussion {
+    border-color: $preview-background;
+  }
 }
 
 .layout__panel--explorer,
 .layout__panel--side-bar {
   background-color: #dadada;
+}
+
+.layout__panel--find-replace {
+  background-color: #e6e6e6;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  height: auto;
+  border-top-right-radius: $border-radius-base;
 }
 </style>

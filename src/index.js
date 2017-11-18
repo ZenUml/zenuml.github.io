@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import 'vue-sequence/dist/vue-sequence.css';
+import 'babel-polyfill';
+import 'indexeddbshim/dist/indexeddbshim';
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 import './extensions/';
 import './services/optional';
@@ -7,6 +9,10 @@ import './icons/';
 import App from './components/App';
 import store from './store';
 import localDbSvc from './services/localDbSvc';
+
+if (!indexedDB) {
+  throw new Error('Your browser is not supported. Please upgrade to the latest version.');
+}
 
 if (NODE_ENV === 'production') {
   OfflinePluginRuntime.install({
@@ -33,10 +39,8 @@ if (localStorage.updated) {
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
-window.app = new Vue({
+new Vue({
   el: '#app',
   store,
   render: h => h(App),
 });
-
-store.commit('code', 'A.method { B.methodB }');

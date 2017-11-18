@@ -1,4 +1,5 @@
 export default () => ({
+  welcomeFileHashes: {},
   showNavigationBar: true,
   showEditor: true,
   showSidePreview: true,
@@ -7,8 +8,12 @@ export default () => ({
   showExplorer: false,
   scrollSync: true,
   focusMode: false,
+  findCaseSensitive: false,
+  findUseRegexp: false,
   sideBarPanel: 'menu',
   htmlExportTemplate: 'styledHtml',
+  pdfExportTemplate: 'styledHtml',
+  pandocExportFormat: 'pdf',
   googleDriveFolderId: '',
   googleDrivePublishFormat: 'markdown',
   googleDrivePublishTemplate: 'styledHtml',

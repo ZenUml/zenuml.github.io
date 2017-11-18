@@ -9,8 +9,9 @@ import markdownConversionSvc from './markdownConversionSvc';
 // import markdownGrammarSvc from './markdownGrammarSvc';
 import sectionUtils from './sectionUtils';
 import extensionSvc from './extensionSvc';
-import animationSvc from './animationSvc';
-import editorEngineSvc from './editorEngineSvc';
+import editorSvcDiscussions from './editorSvcDiscussions';
+import editorSvcUtils from './editorSvcUtils';
+import utils from './utils';
 import store from '../store';
 
 const debounce = cledit.Utils.debounce;
@@ -30,14 +31,15 @@ const allowDebounce = (action, wait) => {
 const diffMatchPatch = new DiffMatchPatch();
 let instantPreview = true;
 let tokens;
-const anchorHash = {};
 
-const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event bus
+// Use a vue instance as an event bus
+const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils, {
   // Elements
   editorElt: null,
   previewElt: null,
   tocElt: null,
   // Other objects
+  clEditor: null,
   pagedownEditor: null,
   options: null,
   // prismGrammars: null, // NOT used anymore, always use javascript
@@ -53,99 +55,6 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
   previewSelectionStartOffset: null,
   previewHtml: null,
   previewText: null,
-
-  /**
-   * Get element and dimension that handles scrolling.
-   */
-  getObjectToScroll() {
-    let elt = this.editorElt.parentNode;
-    let dimensionKey = 'editorDimension';
-    if (!store.getters['layout/styles'].showEditor) {
-      elt = this.previewElt.parentNode;
-      dimensionKey = 'previewDimension';
-    }
-    return {
-      elt,
-      dimensionKey,
-    };
-  },
-
-  /**
-   * Get an object describing the position of the scroll bar in the file.
-   */
-  getScrollPosition() {
-    const objToScroll = this.getObjectToScroll();
-    const scrollTop = objToScroll.elt.scrollTop;
-    let result;
-    if (this.sectionDescMeasuredList) {
-      this.sectionDescMeasuredList.some((sectionDesc, sectionIdx) => {
-        if (scrollTop >= sectionDesc[objToScroll.dimensionKey].endOffset) {
-          return false;
-        }
-        const posInSection = (scrollTop - sectionDesc[objToScroll.dimensionKey].startOffset) /
-          (sectionDesc[objToScroll.dimensionKey].height || 1);
-        result = {
-          sectionIdx,
-          posInSection,
-        };
-        return true;
-      });
-    }
-    return result;
-  },
-
-  /**
-   * Get the offset in the preview corresponding to the offset of the markdown in the editor
-   */
-  getPreviewOffset(editorOffset) {
-    let previewOffset = 0;
-    let offset = editorOffset;
-    this.sectionDescList.some((sectionDesc) => {
-      if (!sectionDesc.textToPreviewDiffs) {
-        previewOffset = undefined;
-        return true;
-      }
-      if (sectionDesc.section.text.length >= offset) {
-        previewOffset += diffMatchPatch.diff_xIndex(sectionDesc.textToPreviewDiffs, offset);
-        return true;
-      }
-      offset -= sectionDesc.section.text.length;
-      previewOffset += sectionDesc.previewText.length;
-      return false;
-    });
-    return previewOffset;
-  },
-
-  /**
-   * Get the offset of the markdown in the editor corresponding to the offset in the preview
-   */
-  getEditorOffset(previewOffset) {
-    let offset = previewOffset;
-    let editorOffset = 0;
-    this.sectionDescList.some((sectionDesc) => {
-      if (!sectionDesc.textToPreviewDiffs) {
-        editorOffset = undefined;
-        return true;
-      }
-      if (sectionDesc.previewText.length >= offset) {
-        const previewToTextDiffs = sectionDesc.textToPreviewDiffs
-          .map(diff => [-diff[0], diff[1]]);
-        editorOffset += diffMatchPatch.diff_xIndex(previewToTextDiffs, offset);
-        return true;
-      }
-      offset -= sectionDesc.previewText.length;
-      editorOffset += sectionDesc.section.text.length;
-      return false;
-    });
-    return editorOffset;
-  },
-
-  /**
-   * Returns the pandoc AST generated from the file tokens and the converter options
-   */
-  getPandocAst() {
-    return tokens && markdownItPandocRenderer(tokens, this.converter.options);
-  },
 
   /**
    * Initialize the Prism grammar with the options
@@ -170,6 +79,8 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
    * Initialize the cledit editor with markdown-it section parser and Prism highlighter
    */
   initClEditor() {
+    this.sectionDescMeasuredList = null;
+    this.sectionDescWithDiffsList = null;
     const options = {
       sectionHighlighter: section => Prism.highlight(
         section.text, Prism.languages.javascript),
@@ -185,7 +96,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
         return 0.15;
       },
     };
-    editorEngineSvc.initClEditor(options);
+    this.initClEditorInternal(options);
     this.restoreScrollPosition();
   },
 
@@ -210,6 +121,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
     let insertBeforePreviewElt = this.previewElt.firstChild;
     let insertBeforeTocElt = this.tocElt.firstChild;
     let previewHtml = '';
+    let loadingImages = [];
     this.conversionCtx.htmlSectionDiff.forEach((item) => {
       for (let i = 0; i < item[1].length; i += 1) {
         const section = this.conversionCtx.sectionList[sectionIdx];
@@ -220,9 +132,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
           newSectionDescList.push(sectionDesc);
           previewHtml += sectionDesc.html;
           sectionIdx += 1;
-          insertBeforePreviewElt.classList.remove('modified');
           insertBeforePreviewElt = insertBeforePreviewElt.nextSibling;
-          insertBeforeTocElt.classList.remove('modified');
           insertBeforeTocElt = insertBeforeTocElt.nextSibling;
         } else if (item[0] === -1) {
           sectionDescIdx += 1;
@@ -238,7 +148,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
 
           // Create preview section element
           sectionPreviewElt = document.createElement('div');
-          sectionPreviewElt.className = 'cl-preview-section modified';
+          sectionPreviewElt.className = 'cl-preview-section';
           sectionPreviewElt.innerHTML = html;
           if (insertBeforePreviewElt) {
             this.previewElt.insertBefore(sectionPreviewElt, insertBeforePreviewElt);
@@ -246,10 +156,14 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
             this.previewElt.appendChild(sectionPreviewElt);
           }
           extensionSvc.sectionPreview(sectionPreviewElt, this.options);
+          loadingImages = [
+            ...loadingImages,
+            ...Array.prototype.slice.call(sectionPreviewElt.getElementsByTagName('img')),
+          ];
 
           // Create TOC section element
           sectionTocElt = document.createElement('div');
-          sectionTocElt.className = 'cl-toc-section modified';
+          sectionTocElt.className = 'cl-toc-section';
           const headingElt = sectionPreviewElt.querySelector('h1, h2, h3, h4, h5, h6');
           if (headingElt) {
             const clonedElt = headingElt.cloneNode(true);
@@ -275,13 +189,17 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
     });
     this.sectionDescList = newSectionDescList;
     this.previewHtml = previewHtml.replace(/^\s+|\s+$/g, '');
+    this.$emit('previewHtml', this.previewHtml);
     this.tocElt.classList[
       this.tocElt.querySelector('.cl-toc-section *') ? 'remove' : 'add'
     ]('toc-tab--empty');
 
-    // Run preview async operations (image loading, mathjax...)
-    const loadingImages = this.previewElt.querySelectorAll('.cl-preview-section.modified img');
-    const loadedPromises = loadingImages.cl_map(imgElt => new Promise((resolve) => {
+    this.previewText = this.previewElt.textContent;
+    this.$emit('previewText', this.previewText);
+    this.makeTextToPreviewDiffs();
+
+    // Wait for images to load
+    const loadedPromises = loadingImages.map(imgElt => new Promise((resolve) => {
       if (!imgElt.src) {
         resolve();
         return;
@@ -292,21 +210,18 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
       img.src = imgElt.src;
     }));
 
-    Promise.all(loadedPromises.concat(extensionSvc.asyncPreview(this.options)))
-      .then(() => {
-        this.previewText = this.previewElt.textContent;
-        this.$emit('previewText', this.previewText);
-        // Debounce if sections have already been mesured
-        this.measureSectionDimensions(!!this.sectionDescMeasuredList);
-        this.makeTextToPreviewDiffs(true);
-      });
+    Promise.all(loadedPromises)
+      // Debounce if sections have already been measured
+      .then(() => this.measureSectionDimensions(!!this.sectionDescMeasuredList));
   },
 
   /**
    * Measure the height of each section in editor, preview and toc.
    */
   measureSectionDimensions: allowDebounce((restoreScrollPosition) => {
-    if (editorSvc.sectionDescList && this.sectionDescList !== editorSvc.sectionDescMeasuredList) {
+    if (editorSvc.sectionDescList &&
+      this.sectionDescList !== editorSvc.sectionDescMeasuredList
+    ) {
       sectionUtils.measureSectionDimensions(editorSvc);
       editorSvc.sectionDescMeasuredList = editorSvc.sectionDescList;
       if (restoreScrollPosition) {
@@ -319,20 +234,36 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
   /**
    * Make the diff between editor's markdown and preview's html.
    */
-  makeTextToPreviewDiffs: allowDebounce(() => {
+  makeTextToPreviewDiffs() {
     if (editorSvc.sectionDescList &&
-      editorSvc.sectionDescList !== editorSvc.sectionDescMeasuredList) {
-      editorSvc.sectionDescList
-        .forEach((sectionDesc) => {
-          if (!sectionDesc.textToPreviewDiffs) {
-            sectionDesc.previewText = sectionDesc.previewElt.textContent;
-            sectionDesc.textToPreviewDiffs = diffMatchPatch.diff_main(
-              sectionDesc.section.text, sectionDesc.previewText);
-          }
-        });
-      editorSvc.sectionDescWithDiffsList = editorSvc.sectionDescList;
+      editorSvc.sectionDescList !== editorSvc.sectionDescWithDiffsList
+    ) {
+      const makeOne = () => {
+        let hasOne = false;
+        const hasMore = editorSvc.sectionDescList
+          .some((sectionDesc) => {
+            if (!sectionDesc.textToPreviewDiffs) {
+              if (hasOne) {
+                return true;
+              }
+              sectionDesc.previewText = sectionDesc.previewElt.textContent;
+              sectionDesc.textToPreviewDiffs = diffMatchPatch.diff_main(
+                sectionDesc.section.text, sectionDesc.previewText);
+              hasOne = true;
+            }
+            return false;
+          });
+        if (hasMore) {
+          setTimeout(() => makeOne(), 10);
+        } else {
+          editorSvc.previewTextWithDiffsList = editorSvc.previewText;
+          editorSvc.sectionDescWithDiffsList = editorSvc.sectionDescList;
+          editorSvc.$emit('sectionDescWithDiffsList', editorSvc.sectionDescWithDiffsList);
+        }
+      };
+      makeOne();
     }
-  }, 50),
+  },
 
   /**
    * Save editor selection/scroll state into the current file content.
@@ -341,27 +272,11 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
     const scrollPosition = editorSvc.getScrollPosition() ||
       store.getters['contentState/current'].scrollPosition;
     store.dispatch('contentState/patchCurrent', {
-      selectionStart: editorEngineSvc.clEditor.selectionMgr.selectionStart,
-      selectionEnd: editorEngineSvc.clEditor.selectionMgr.selectionEnd,
+      selectionStart: editorSvc.clEditor.selectionMgr.selectionStart,
+      selectionEnd: editorSvc.clEditor.selectionMgr.selectionEnd,
       scrollPosition,
     });
   }, 100),
-
-  /**
-   * Restore the scroll position from the current file content state.
-   */
-  restoreScrollPosition() {
-    const scrollPosition = store.getters['contentState/current'].scrollPosition;
-    if (scrollPosition && this.sectionDescMeasuredList) {
-      const objectToScroll = this.getObjectToScroll();
-      const sectionDesc = this.sectionDescMeasuredList[scrollPosition.sectionIdx];
-      if (sectionDesc) {
-        const scrollTop = sectionDesc[objectToScroll.dimensionKey].startOffset +
-          (sectionDesc[objectToScroll.dimensionKey].height * scrollPosition.posInSection);
-        objectToScroll.elt.scrollTop = Math.floor(scrollTop);
-      }
-    }
-  },
 
   /**
    * Report selection from the preview to the editor.
@@ -392,9 +307,9 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
         previewSelectionEndOffset = previewSelectionStartOffset + `${range}`.length;
         const editorStartOffset = editorSvc.getEditorOffset(previewSelectionStartOffset);
         const editorEndOffset = editorSvc.getEditorOffset(previewSelectionEndOffset);
-        if (editorStartOffset !== undefined && editorEndOffset !== undefined) {
-          editorEngineSvc.clEditor.selectionMgr.setSelectionStartEnd(
-            editorStartOffset, editorEndOffset, false);
+        if (editorStartOffset != null && editorEndOffset != null) {
+          editorSvc.clEditor.selectionMgr.setSelectionStartEnd(
+            editorStartOffset, editorEndOffset);
         }
       }
       editorSvc.previewSelectionRange = range;
@@ -403,35 +318,10 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
   }, 50),
 
   /**
-   * Scroll the preview (or the editor if preview is hidden) to the specified anchor
+   * Returns the pandoc AST generated from the file tokens and the converter options
    */
-  scrollToAnchor(anchor) {
-    let scrollTop = 0;
-    let scrollerElt = this.previewElt.parentNode;
-    const sectionDesc = anchorHash[anchor];
-    if (sectionDesc) {
-      if (store.getters['layout/styles'].showPreview) {
-        scrollTop = sectionDesc.previewDimension.startOffset;
-      } else {
-        scrollTop = sectionDesc.editorDimension.startOffset;
-        scrollerElt = this.editorElt.parentNode;
-      }
-    } else {
-      const elt = document.getElementById(anchor);
-      if (elt) {
-        scrollTop = elt.offsetTop;
-      }
-    }
-    const maxScrollTop = scrollerElt.scrollHeight - scrollerElt.offsetHeight;
-    if (scrollTop < 0) {
-      scrollTop = 0;
-    } else if (scrollTop > maxScrollTop) {
-      scrollTop = maxScrollTop;
-    }
-    animationSvc.animate(scrollerElt)
-      .scrollTop(scrollTop)
-      .duration(360)
-      .start();
+  getPandocAst() {
+    return tokens && markdownItPandocRenderer(tokens, this.converter.options);
   },
 
   /**
@@ -442,26 +332,27 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
     this.previewElt = previewElt;
     this.tocElt = tocElt;
 
-    editorEngineSvc.createClEditor(editorElt);
-    editorEngineSvc.clEditor.on('contentChanged', (content, diffs, sectionList) => {
+    this.createClEditor(editorElt);
+    this.clEditor.on('contentChanged', (content, diffs, sectionList) => {
       const parsingCtx = {
         ...this.parsingCtx,
         sectionList,
       };
       this.parsingCtx = parsingCtx;
+      store.dispatch('updateCode', { code: content });
     });
-    editorEngineSvc.clEditor.undoMgr.on('undoStateChange', () => {
-      const canUndo = editorEngineSvc.clEditor.undoMgr.canUndo();
+    this.clEditor.undoMgr.on('undoStateChange', () => {
+      const canUndo = this.clEditor.undoMgr.canUndo();
       if (canUndo !== store.state.layout.canUndo) {
         store.commit('layout/setCanUndo', canUndo);
       }
-      const canRedo = editorEngineSvc.clEditor.undoMgr.canRedo();
+      const canRedo = this.clEditor.undoMgr.canRedo();
       if (canRedo !== store.state.layout.canRedo) {
         store.commit('layout/setCanRedo', canRedo);
       }
     });
     this.pagedownEditor = pagedown({
-      input: Object.create(editorEngineSvc.clEditor),
+      input: Object.create(this.clEditor),
     });
     this.pagedownEditor.run();
     this.pagedownEditor.hooks.set('insertLinkDialog', (callback) => {
@@ -514,7 +405,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
         this.saveContentState();
       };
 
-    editorEngineSvc.clEditor.selectionMgr.on('selectionChanged',
+    this.clEditor.selectionMgr.on('selectionChanged',
       (start, end, selectionRange) => onEditorChanged(undefined, selectionRange));
 
     /* -----------------------------
@@ -562,7 +453,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
 
     let imgEltsToCache = [];
     if (store.getters['data/computedSettings'].editor.inlineImages) {
-      editorEngineSvc.clEditor.highlighter.on('sectionHighlighted', (section) => {
+      this.clEditor.highlighter.on('sectionHighlighted', (section) => {
         section.elt.getElementsByClassName('token img').cl_each((imgTokenElt) => {
           const srcElt = imgTokenElt.querySelector('.token.cl-src');
           if (srcElt) {
@@ -588,7 +479,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
       });
     }
 
-    editorEngineSvc.clEditor.highlighter.on('highlighted', () => {
+    this.clEditor.highlighter.on('highlighted', () => {
       imgEltsToCache.forEach((imgElt) => {
         const cachedImgElt = getFromImgCache(imgElt.src);
         if (cachedImgElt) {
@@ -603,7 +494,7 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
       triggerImgCacheGc();
     });
 
-    editorEngineSvc.clEditor.on('contentChanged',
+    this.clEditor.on('contentChanged',
       (content, diffs, sectionList) => onEditorChanged(sectionList));
 
     this.$emit('inited');
@@ -637,18 +528,18 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
         if (content.properties !== lastProperties) {
           lastProperties = content.properties;
           const options = extensionSvc.getOptions(store.getters['content/currentProperties']);
-          if (JSON.stringify(options) !== JSON.stringify(editorSvc.options)) {
-            editorSvc.options = options;
-            editorSvc.initPrism();
-            editorSvc.initConverter();
+          if (utils.serializeObject(options) !== utils.serializeObject(this.options)) {
+            this.options = options;
+            this.initPrism();
+            this.initConverter();
             initClEditor = true;
           }
         }
         if (initClEditor) {
-          editorSvc.initClEditor();
+          this.initClEditor();
         }
         // Apply possible text and discussion changes
-        editorEngineSvc.applyContent();
+        this.applyContent();
       }, {
         immediate: true,
       });
@@ -656,12 +547,14 @@ const editorSvc = Object.assign(new Vue(), { // Use a vue instance as an event b
     // Disable editor if hidden or if no content is loaded
     store.watch(
       () => store.getters['content/current'].id && store.getters['layout/styles'].showEditor,
-      editable => editorEngineSvc.clEditor.toggleEditable(!!editable), {
+      editable => this.clEditor.toggleEditable(!!editable), {
         immediate: true,
       });
 
-    store.watch(() => store.getters['layout/styles'],
-      () => editorSvc.measureSectionDimensions(false, true));
+    store.watch(() => utils.serializeObject(store.getters['layout/styles']),
+      () => this.measureSectionDimensions(false, true));
+
+    this.initHighlighters();
   },
 });
 

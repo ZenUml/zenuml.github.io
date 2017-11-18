@@ -51,7 +51,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Prism from 'prismjs';
-import MenuEntry from './MenuEntry';
+import MenuEntry from './common/MenuEntry';
 import UserImage from '../UserImage';
 import googleHelper from '../../services/providers/helpers/googleHelper';
 import syncSvc from '../../services/syncSvc';

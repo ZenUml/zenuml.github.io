@@ -3,7 +3,7 @@
     <div class="stat-panel__block stat-panel__block--left" v-if="styles.showEditor">
       <span class="stat-panel__block-name">
         ZenUML
-        <small v-if="textSelection">(selection)</small>
+        <span v-if="textSelection">selection</span>
       </span>
       <span v-for="stat in textStats" :key="stat.id">
         <span class="stat-panel__value">{{stat.value}}</span> {{stat.name}}
@@ -13,7 +13,7 @@
     <!--<div class="stat-panel__block stat-panel__block&#45;&#45;right">-->
       <!--<span class="stat-panel__block-name">-->
         <!--HTML-->
-        <!--<small v-if="htmlSelection">(selection)</small>-->
+        <!--<span v-if="htmlSelection">selection</span>-->
       <!--</span>-->
       <!--<span v-for="stat in htmlStats" :key="stat.id">-->
         <!--<span class="stat-panel__value">{{stat.value}}</span> {{stat.name}}-->
@@ -25,7 +25,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import editorSvc from '../services/editorSvc';
-import editorEngineSvc from '../services/editorEngineSvc';
 import utils from '../services/utils';
 
 class Stat {
@@ -67,13 +66,13 @@ export default {
   methods: {
     computeText() {
       this.textSelection = false;
-      let text = editorEngineSvc.clEditor.getContent();
-      const beforeText = text.slice(0, editorEngineSvc.clEditor.selectionMgr.selectionEnd);
+      let text = editorSvc.clEditor.getContent();
+      const beforeText = text.slice(0, editorSvc.clEditor.selectionMgr.selectionEnd);
       const beforeLines = beforeText.split('\n');
       this.line = beforeLines.length;
       this.column = beforeLines.pop().length;
 
-      const selectedText = editorEngineSvc.clEditor.selectionMgr.getSelectedText();
+      const selectedText = editorSvc.clEditor.selectionMgr.getSelectedText();
       if (selectedText) {
         this.textSelection = true;
         text = selectedText;
@@ -121,10 +120,6 @@ export default {
 
 .stat-panel__block--right {
   float: right;
-}
-
-.stat-panel__block-name {
-  font-weight: 600;
 }
 
 .stat-panel__value {

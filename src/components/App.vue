@@ -14,6 +14,8 @@ import Layout from './Layout';
 import Modal from './Modal';
 import Notification from './Notification';
 import SplashScreen from './SplashScreen';
+import timeSvc from '../services/timeSvc';
+import store from '../store';
 
 // Global directives
 Vue.directive('focus', {
@@ -48,6 +50,11 @@ Vue.directive('title', {
   },
 });
 
+// Global filters
+Vue.filter('formatTime', time =>
+  // Access the minute counter for reactive refresh
+  timeSvc.format(time, store.state.minuteCounter));
+
 export default {
   components: {
     Layout,
@@ -68,12 +75,4 @@ export default {
 
 <style lang="scss">
 @import 'common/app';
-
-.app__spash-screen {
-  margin: 0 auto;
-  max-width: 600px;
-  height: 100%;
-  background: no-repeat center url('../assets/logo.svg');
-  background-size: contain;
-}
 </style>

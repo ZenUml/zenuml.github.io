@@ -1,29 +1,21 @@
 <template>
-  <div class="user-image" :style="{'background-image': url}">
+  <div class="user-image" :style="{backgroundImage: url}">
   </div>
 </template>
 
 <script>
-import googleHelper from '../services/providers/helpers/googleHelper';
-
-const promised = {};
+import userSvc from '../services/userSvc';
 
 export default {
   props: ['userId'],
   computed: {
     url() {
       const userInfo = this.$store.state.userInfo.itemMap[this.userId];
-      return userInfo && `url('${userInfo.imageUrl}')`;
+      return userInfo && userInfo.imageUrl && `url('${userInfo.imageUrl}')`;
     },
   },
   created() {
-    if (!promised[this.userId] && !this.$store.state.offline) {
-      promised[this.userId] = true;
-      googleHelper.getUser(this.userId)
-        .catch(() => {
-          promised[this.userId] = false;
-        });
-    }
+    userSvc.getInfo(this.userId);
   },
 };
 </script>

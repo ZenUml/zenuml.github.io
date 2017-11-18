@@ -3,36 +3,63 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { Store } from 'vue-sequence';
 import utils from '../services/utils';
-import contentState from './modules/contentState';
-import syncedContent from './modules/syncedContent';
-import content from './modules/content';
-import file from './modules/file';
-import folder from './modules/folder';
-import publishLocation from './modules/publishLocation';
-import syncLocation from './modules/syncLocation';
-import data from './modules/data';
-import layout from './modules/layout';
-import explorer from './modules/explorer';
-import modal from './modules/modal';
-import notification from './modules/notification';
-import queue from './modules/queue';
-import userInfo from './modules/userInfo';
+import contentState from './contentState';
+import syncedContent from './syncedContent';
+import content from './content';
+import file from './file';
+import findReplace from './findReplace';
+import folder from './folder';
+import publishLocation from './publishLocation';
+import syncLocation from './syncLocation';
+import data from './data';
+import discussion from './discussion';
+import layout from './layout';
+import explorer from './explorer';
+import modal from './modal';
+import notification from './notification';
+import queue from './queue';
+import userInfo from './userInfo';
 
 Vue.use(Vuex);
 
 const debug = NODE_ENV !== 'production';
 
 const store = new Vuex.Store({
+  modules: {
+    contentState,
+    syncedContent,
+    content,
+    discussion,
+    file,
+    findReplace,
+    folder,
+    publishLocation,
+    syncLocation,
+    data,
+    layout,
+    explorer,
+    modal,
+    notification,
+    queue,
+    userInfo,
+    Store,
+  },
   state: {
     ready: false,
     offline: false,
     lastOfflineCheck: 0,
+    minuteCounter: 0,
+    monetizeSponsor: false,
   },
   getters: {
     allItemMap: (state) => {
       const result = {};
       utils.types.forEach(type => Object.assign(result, state[type].itemMap));
       return result;
+    },
+    isSponsor: (state, getters) => {
+      const loginToken = getters['data/loginToken'];
+      return state.monetizeSponsor || (loginToken && loginToken.isSponsor);
     },
   },
   mutations: {
@@ -44,6 +71,15 @@ const store = new Vuex.Store({
     },
     updateLastOfflineCheck: (state) => {
       state.lastOfflineCheck = Date.now();
+    },
+    updateMinuteCounter: (state) => {
+      state.minuteCounter += 1;
+    },
+    setMonetizeSponsor: (state, value) => {
+      state.monetizeSponsor = value;
+    },
+    setGoogleSponsor: (state, value) => {
+      state.googleSponsor = value;
     },
   },
   actions: {
@@ -87,25 +123,12 @@ const store = new Vuex.Store({
         .forEach(item => commit('publishLocation/deleteItem', item.id));
     },
   },
-  modules: {
-    contentState,
-    syncedContent,
-    content,
-    file,
-    folder,
-    publishLocation,
-    syncLocation,
-    data,
-    layout,
-    explorer,
-    modal,
-    notification,
-    queue,
-    userInfo,
-    Store,
-  },
   strict: debug,
   plugins: debug ? [createLogger()] : [],
 });
+
+setInterval(() => {
+  store.commit('updateMinuteCounter');
+}, 60 * 1000);
 
 export default store;

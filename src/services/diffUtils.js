@@ -33,14 +33,8 @@ function makePatchableText(content, markerKeys, markerIdxMap) {
       }
     }
 
-    if (discussion.offset0 === discussion.offset1) {
-      // Remove discussion offsets if markers are at the same position
-      discussion.offset0 = undefined;
-      discussion.offset1 = undefined;
-    } else {
-      addMarker('offset0');
-      addMarker('offset1');
-    }
+    addMarker('start');
+    addMarker('end');
   });
 
   let lastOffset = 0;
@@ -70,21 +64,28 @@ function stripDiscussionOffsets(objectMap) {
 }
 
 function restoreDiscussionOffsets(content, markerKeys) {
-  const len = content.text.length;
+  // Init offsets (just in case)
+  Object.keys(content.discussions).forEach((discussionId) => {
+    const discussion = content.discussions[discussionId];
+    discussion.start = 0;
+    discussion.end = 0;
+  });
+  // Go through markers
+  let count = 0;
   const maxIdx = markerKeys.length;
-  for (let i = 0; i < len; i += 1) {
-    const idx = content.text.charCodeAt(i) - 0xe000;
-    if (idx >= 0 && idx < maxIdx) {
-      const markerKey = markerKeys[idx];
-      content.text = content.text.slice(0, i) + content.text.slice(i + 1);
-      const discussion = content.discussions[markerKey.id];
-      if (discussion) {
-        discussion[markerKey.offsetName] = i;
-      }
-      // We just removed the current character, we may have multiple markers with same offset
-      i -= 1;
+  content.text = content.text.replace(/[\ue000-\uf8ff]/g, (match, offset) => {
+    const idx = match.charCodeAt(0) - 0xe000;
+    if (idx >= maxIdx) {
+      return match;
     }
-  }
+    const markerKey = markerKeys[idx];
+    const discussion = content.discussions[markerKey.id];
+    if (discussion) {
+      discussion[markerKey.offsetName] = offset - count;
+    }
+    count += 1;
+    return '';
+  });
 }
 
 function mergeText(serverText, clientText, lastMergedText) {
@@ -103,7 +104,7 @@ function mergeText(serverText, clientText, lastMergedText) {
   const lastMergedTextDiffs = diffMatchPatch.diff_main(lastMergedText, intersectionText)
     // Keep only equalities and deletions
     .filter(diff => diff[0] !== DiffMatchPatch.DIFF_INSERT);
-  diffMatchPatch.diff_cleanupSemantic(serverClientDiffs);
+  diffMatchPatch.diff_cleanupSemantic(lastMergedTextDiffs);
   // Make a patch with deletions only
   const patches = diffMatchPatch.patch_make(lastMergedText, lastMergedTextDiffs);
   // Apply patch to fusion text
