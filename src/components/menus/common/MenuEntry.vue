@@ -20,7 +20,7 @@
   text-transform: none;
 
   div div {
-    text-decoration: underline;
+    /* text-decoration: underline; */
     text-decoration-skip: ink;
 
     &.menu-entry__sponsor {
