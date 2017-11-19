@@ -1,12 +1,9 @@
 CACHE MANIFEST
-#ver:11/19/2017, 6:42:51 PM
+#ver:11/19/2017, 7:35:11 PM
 #plugin:4.8.4
 
 CACHE:
-/dist/icons-c780ddaa6d41f34c5660db09bd9af20b/favicon.ico
-/dist/icons-c780ddaa6d41f34c5660db09bd9af20b/manifest.json
-/dist/icons-c780ddaa6d41f34c5660db09bd9af20b/manifest.webapp
-/dist/eace8c2cdafff5055b4e.worker.js
+/dist/15435916d7ba01a4623e.worker.js
 /dist/static/fonts/RobotoMono-Bold.819f3b2.woff
 /dist/static/fonts/RobotoMono-Regular.0b6a547.woff
 /dist/static/fonts/lato-black-italic.798eafd.woff
@@ -15,9 +12,9 @@ CACHE:
 /dist/static/fonts/lato-normal.27bd77b.woff
 /dist/static/img/logo.8fc990d.png
 /dist/static/js/vendor.cae27d9930783254ddba.js
-/dist/static/js/app.fef833a5164fc9c4e6e3.js
-/dist/static/js/manifest.8b4c78318f1a59f66dc3.js
-/dist/static/css/app.f4a91ff4af8282d1dca5c7d3b1795116.css
+/dist/static/js/app.c572ce881c69fd14adb8.js
+/dist/static/js/manifest.58d1e82752e4ec391da6.js
+/dist/static/css/app.d25f362d1ba2b7f9b2aabf900de7a667.css
 /dist/../
 /app
 /oauth2/callback
