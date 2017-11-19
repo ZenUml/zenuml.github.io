@@ -11,7 +11,7 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import Layout from './Layout';
-import Modal from './Modal';
+// import Modal from './Modal';
 import Notification from './Notification';
 import SplashScreen from './SplashScreen';
 import timeSvc from '../services/timeSvc';
@@ -58,7 +58,7 @@ Vue.filter('formatTime', time =>
 export default {
   components: {
     Layout,
-    Modal,
+    // Modal,
     Notification,
     SplashScreen,
   },
@@ -67,7 +67,8 @@ export default {
       'ready',
     ]),
     showModal() {
-      return !!this.$store.getters['modal/config'];
+      return false;
+      // return !!this.$store.getters['modal/config'];
     },
   },
 };
