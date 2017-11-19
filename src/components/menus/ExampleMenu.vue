@@ -1,6 +1,6 @@
 <template>
   <div class="side-bar__panel side-bar__panel--menu">
-    <menu-entry @click.native="setPanel('sync')">
+    <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism"><h3>Single</h3>
@@ -9,7 +9,7 @@
         </div>
       </div>
     </menu-entry>
-    <menu-entry @click.native="setPanel('sync')">
+    <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism"><h3>Nested</h3>
@@ -18,7 +18,7 @@
         </div>
       </div>
     </menu-entry>
-    <menu-entry @click.native="setPanel('sync')">
+    <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism"><h3>Self</h3>
@@ -27,7 +27,7 @@
         </div>
       </div>
     </menu-entry>
-    <menu-entry @click.native="setPanel('sync')">
+    <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism"><h3>Alt</h3>
@@ -36,7 +36,7 @@
         </div>
       </div>
     </menu-entry>
-    <menu-entry @click.native="setPanel('sync')">
+    <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism"><h3>Loop</h3>
