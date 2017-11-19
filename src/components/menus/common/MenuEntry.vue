@@ -1,12 +1,13 @@
 <template>
-  <a href="javascript:void(0)" class="menu-entry button flex flex--row flex--align-center">
+  <!--<a href="javascript:void(0)" class="menu-entry button flex flex&#45;&#45;row flex&#45;&#45;align-center">-->
+  <div class="menu-entry flex flex--row flex--align-center">
     <!--<div class="menu-entry__icon flex flex&#45;&#45;column flex&#45;&#45;center">-->
       <!--<slot name="icon"></slot>-->
     <!--</div>-->
     <div class="menu-entry__text flex flex--column">
       <slot></slot>
     </div>
-  </a>
+  </div>
 </template>
 
 <style lang="scss">
