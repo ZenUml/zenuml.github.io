@@ -11,6 +11,12 @@
         <icon-provider provider-id="zenuml"></icon-provider>
       </button>
     </div>
+    <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--button">
+      <a class="navigation-bar__button navigation-bar__button--stackedit button" v-title="'Get chrome extension'" :href="webStoreUrl">
+        <!--<icon-provider provider-id="stackedit"></icon-provider>-->
+        <icon-provider provider-id="chrome"></icon-provider> CHROME EXTENSION
+      </a>
+    </div>
     <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--title flex flex--row">
       <div class="navigation-bar__spinner">
         <div v-if="!offline && showSpinner" class="spinner"></div>
@@ -97,6 +103,7 @@ export default {
     title: '',
     titleFocus: false,
     titleHover: false,
+    webStoreUrl: 'https://chrome.google.com/webstore/detail/web-sequence/kcpganeflmhffnlofpdmcjklmdpbbmef',
   }),
   computed: {
     ...mapState([

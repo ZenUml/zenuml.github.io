@@ -22,6 +22,10 @@ export default {
   background-image: url(../assets/iconZenUML.png);
 }
 
+.icon-provider--chrome {
+  background-image: url(../assets/iconGoogleChrome.svg);
+}
+
 .icon-provider--stackedit {
   background-image: url(../assets/iconStackedit.svg);
 }
