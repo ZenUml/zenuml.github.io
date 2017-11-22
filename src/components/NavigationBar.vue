@@ -8,7 +8,7 @@
     <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--button">
       <button class="navigation-bar__button navigation-bar__button--stackedit button" @click="toggleSideBar()" v-title="'Toggle side bar'">
         <!--<icon-provider provider-id="stackedit"></icon-provider>-->
-        <icon-provider provider-id="zenuml"></icon-provider>
+        <icon-help-circle></icon-help-circle>
       </button>
     </div>
     <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--button">

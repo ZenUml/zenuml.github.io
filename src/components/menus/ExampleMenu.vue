@@ -3,7 +3,8 @@
     <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
-      <div class="h3-section prism"><h3>Single</h3>
+      <div class="h3-section prism">
+        <h3>Single</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="singleMessage"></pre>
         </div>
@@ -12,7 +13,8 @@
     <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
-      <div class="h3-section prism"><h3>Nested</h3>
+      <div class="h3-section prism">
+        <h3>Nested</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="nestedMessage"></pre>
         </div>
@@ -21,7 +23,8 @@
     <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
-      <div class="h3-section prism"><h3>Self</h3>
+      <div class="h3-section prism">
+        <h3>Self</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="selfMessage"></pre>
         </div>
@@ -30,7 +33,8 @@
     <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
-      <div class="h3-section prism"><h3>Alt</h3>
+      <div class="h3-section prism">
+        <h3>Alt</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="altMessage"></pre>
         </div>
@@ -39,7 +43,8 @@
     <menu-entry>
       <icon-help-circle slot="icon"></icon-help-circle>
 
-      <div class="h3-section prism"><h3>Loop</h3>
+      <div class="h3-section prism">
+        <h3>Loop</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="loopMessage"></pre>
         </div>
