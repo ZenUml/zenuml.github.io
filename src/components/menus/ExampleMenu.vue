@@ -4,6 +4,16 @@
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism">
+        <h3>Result *New*</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="resultMessage"></pre>
+        </div>
+      </div>
+    </menu-entry>
+    <menu-entry>
+      <icon-help-circle slot="icon"></icon-help-circle>
+
+      <div class="h3-section prism">
         <h3>Single</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="singleMessage"></pre>
@@ -73,6 +83,9 @@ export default {
     ]),
     singleMessage() {
       return Prism.highlight('A.methodA(p1, p2)', Prism.languages.javascript);
+    },
+    resultMessage() {
+      return Prism.highlight('TYPE result = A.methodA()', Prism.languages.javascript);
     },
     nestedMessage() {
       return Prism.highlight('A.methodA(p1, p2) {\n B.methodB(p3) \n}', Prism.languages.javascript);
