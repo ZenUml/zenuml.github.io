@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#ver:12/2/2017, 8:51:44 PM
+#ver:12/2/2017, 9:14:11 PM
 #plugin:4.8.4
 
 CACHE:
@@ -16,6 +16,7 @@ CACHE:
 /dist/static/js/manifest.5a29a727f19544aa0892.js
 /dist/static/css/app.c37535d7841a7e48a9521b9b6be609c6.css
 /dist/../app.html
+/dist/static/video/10s.mp4
 /app
 /oauth2/callback
 
