@@ -47,12 +47,12 @@ var webpackConfig = merge(baseWebpackConfig, {
         safe: true
       }
     }),
-    // generate dist index.html with correct asset hash for caching.
-    // you can customize output by editing /index.html
+    // generate dist app.html with correct asset hash for caching.
+    // you can customize output by editing /app.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: config.build.index,
-      template: 'index-template.html',
+      template: 'app-template.html',
       inject: true,
       minify: {
         removeComments: true,
@@ -96,7 +96,7 @@ var webpackConfig = merge(baseWebpackConfig, {
       ServiceWorker: {
         events: true
       },
-      excludes: ['**/.*', '**/*.map', '**/index.html', '**/static/oauth2/callback.html', '**/icons-*/*.png', '**/static/fonts/KaTeX_*'],
+      excludes: ['**/.*', '**/*.map', '**/app.html', '**/static/oauth2/callback.html', '**/icons-*/*.png', '**/static/fonts/KaTeX_*'],
       externals: ['/app', '/oauth2/callback']
     })
   ]

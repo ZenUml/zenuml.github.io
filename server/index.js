@@ -58,8 +58,8 @@ module.exports = (app, serveV4) => {
       app.get('/viewer', (req, res) => res.sendFile(resolvePath('stackedit_v4/views/viewer.html')));
     }
 
-    // Serve index.html in /app
-    app.get('/app', (req, res) => res.sendFile(resolvePath('index.html')));
+    // Serve app.html in /app
+    app.get('/app', (req, res) => res.sendFile(resolvePath('app.html')));
 
     // Serve style.css with 1 day max-age
     app.get('/style.css', (req, res) => res.sendFile(resolvePath('dist/style.css'), {

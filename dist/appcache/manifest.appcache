@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#ver:11/19/2017, 9:41:43 PM
+#ver:12/2/2017, 8:51:44 PM
 #plugin:4.8.4
 
 CACHE:
@@ -11,11 +11,11 @@ CACHE:
 /dist/static/fonts/lato-normal-italic.f28f2d6.woff
 /dist/static/fonts/lato-normal.27bd77b.woff
 /dist/static/img/logo.8fc990d.png
-/dist/static/js/vendor.cae27d9930783254ddba.js
-/dist/static/js/app.ebb0c97c6d5bfa66b966.js
-/dist/static/js/manifest.94a6610f37dd5ea98401.js
-/dist/static/css/app.d25f362d1ba2b7f9b2aabf900de7a667.css
-/dist/../
+/dist/static/js/vendor.d3d4bd4722c16b67e084.js
+/dist/static/js/app.c324eb6c15ddf3de6e16.js
+/dist/static/js/manifest.5a29a727f19544aa0892.js
+/dist/static/css/app.c37535d7841a7e48a9521b9b6be609c6.css
+/dist/../app.html
 /app
 /oauth2/callback
 
