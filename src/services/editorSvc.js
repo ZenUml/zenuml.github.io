@@ -554,6 +554,14 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
     store.watch(() => utils.serializeObject(store.getters['layout/styles']),
       () => this.measureSectionDimensions(false, true));
 
+    store.watch(
+      () => store.getters['layout/styles'].showPreview,
+      (newValue) => {
+        if (newValue) {
+          store.dispatch('updateCode', { code: store.getters['content/current'].text });
+        }
+      },
+    );
     this.initHighlighters();
   },
 });
