@@ -4,9 +4,9 @@
       <icon-help-circle slot="icon"></icon-help-circle>
 
       <div class="h3-section prism">
-        <h3>Result *New*</h3>
+        <h3>Starter</h3>
         <div class="body">
-          <pre class="javascript-highlighting" v-html="resultMessage"></pre>
+          <pre class="javascript-highlighting" v-html="starter"></pre>
         </div>
       </div>
     </menu-entry>
@@ -17,6 +17,16 @@
         <h3>Single</h3>
         <div class="body">
           <pre class="javascript-highlighting" v-html="singleMessage"></pre>
+        </div>
+      </div>
+    </menu-entry>
+    <menu-entry>
+      <icon-help-circle slot="icon"></icon-help-circle>
+
+      <div class="h3-section prism">
+        <h3>Result</h3>
+        <div class="body">
+          <pre class="javascript-highlighting" v-html="resultMessage"></pre>
         </div>
       </div>
     </menu-entry>
@@ -81,6 +91,9 @@ export default {
     ...mapGetters('data', [
       'loginToken',
     ]),
+    starter() {
+      return Prism.highlight('@Starter(User)\nA.methodA(p1, p2)', Prism.languages.javascript);
+    },
     singleMessage() {
       return Prism.highlight('A.methodA(p1, p2)', Prism.languages.javascript);
     },
