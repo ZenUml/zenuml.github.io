@@ -1,28 +1,6 @@
-//*********************** GET STARTED ***********************
-// 1. Change `course` to `Course` (line 17)
-// 2. Change line #17 to Course.isEligible(aStudent)
-// 3. Rename `EventBus` to `EnrollingEventBus` (line 22 & 24)
-// 4. Remove all the code and put yours in
-// 5. Have fun!
-//***********************************************************
-
-// Student is the initial participant
-Student.enroll(Seminar) {
-  // Call a method of another participant
-  Seminar.enroll(aStudent) {
-    // Call an internal method
-    getCourses()
-    // Loop fragment
-    while(moreCourse) {
-      course.isStudentEligible() {
-        Student.getSeminarHistory()
-      }
-      // Alternation fragment
-      if (eligible) {
-        EventBus.enroll()
-      } else {
-        EventBus.reject()
-      }
-    }
-  }
+// NEW FEATURE - @Starter
+// User @Starter to set who starts this sequence
+@Starter(Browser)
+Controller.getBook(id) {
+  BookService.get(id)
 }
