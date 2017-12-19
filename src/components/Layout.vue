@@ -29,7 +29,7 @@
             <div class="gutter" :style="{left: styles.previewGutterLeft + 'px'}">
               <div class="gutter__background" v-if="styles.previewGutterWidth" :style="{width: styles.previewGutterWidth + 'px'}"></div>
             </div>
-            <preview v-show="styles.showPreview"></preview>
+            <preview v-if="styles.showPreview"></preview>
             <div class="gutter" :style="{left: styles.previewGutterLeft + 'px'}">
               <sticky-comment v-if="styles.previewGutterWidth && stickyComment === 'top'"></sticky-comment>
               <current-discussion v-if="styles.previewGutterWidth"></current-discussion>
