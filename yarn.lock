@@ -6360,6 +6360,12 @@ sequence-parser@^0.4.0:
   dependencies:
     antlr4 "^4.7.0"
 
+sequence-parser@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/sequence-parser/-/sequence-parser-0.4.1.tgz#2ca85486a748f9c36cf67143fcd4ffd059d0b060"
+  dependencies:
+    antlr4 "^4.7.0"
+
 sequencify@~0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/sequencify/-/sequencify-0.0.7.tgz#90cff19d02e07027fd767f5ead3e7b95d1e7380c"

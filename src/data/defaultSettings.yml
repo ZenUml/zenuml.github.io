@@ -60,7 +60,7 @@ newFileContent: |
   // NEW FEATURE - @Starter
   // User @Starter to set who starts this sequence
   @Starter(User)
-  ZenUML.hello(world)
+  Type t = zenUML:ZenUML.hello(world)
   // Checkout more examples by clicking
   // the top right corner button
 

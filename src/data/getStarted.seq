@@ -2,5 +2,5 @@
 // User @Starter to set who starts this sequence
 @Starter(Browser)
 Controller.getBook(id) {
-  BookService.get(id)
+  Book b = service:BookService.get(id)
 }
