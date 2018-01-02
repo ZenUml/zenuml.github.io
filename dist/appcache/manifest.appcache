@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#ver:12/30/2017, 7:26:05 PM
+#ver:1/3/2018, 9:24:37 AM
 #plugin:4.8.4
 
 CACHE:
@@ -11,20 +11,20 @@ CACHE:
 /dist/static/fonts/lato-normal-italic.f28f2d6.woff
 /dist/static/fonts/lato-normal.27bd77b.woff
 /dist/static/img/logo.8fc990d.png
-/dist/static/js/vendor.4756fce1aaf395372f03.js
+/dist/static/js/vendor.602bfef0c6f945168b47.js
 /dist/static/js/app.392d486998ffc2d3707e.js
-/dist/static/js/manifest.f77ef7cd88ba8da222cc.js
-/dist/static/css/app.08a7546ef8bb37cbbe66fff7f03b82a0.css
+/dist/static/js/manifest.34ccce54532eea7db92b.js
+/dist/static/css/app.596befbb2b3c8fb67017fbb13e40997e.css
 /dist/../app.html
 /dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch(1).css
 /dist/static/video/10s.mp4
-/dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch(2).css
 /dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch(3).css
-/dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch(4).css
+/dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch(2).css
 /dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch.css
+/dist/static/ZenUML_Sequence_Diagram_addon_help_files/batch(4).css
 /dist/static/ZenUML_Sequence_Diagram_addon_help_files/colors.css
-/dist/static/ZenUML_Sequence_Diagram_addon_help_files/saved_resource(1).html
 /dist/static/ZenUML_Sequence_Diagram_addon_help_files/saved_resource.html
+/dist/static/ZenUML_Sequence_Diagram_addon_help_files/saved_resource(1).html
 /dist/static/ZenUML_Sequence_Diagram_addon_help_files/Screenshot.png
 /app
 /oauth2/callback
