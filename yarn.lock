@@ -6377,6 +6377,12 @@ send@0.15.6:
     range-parser "~1.2.0"
     statuses "~1.3.1"
 
+sequence-parser@^0.4.10:
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/sequence-parser/-/sequence-parser-0.4.10.tgz#ae4870cc40cc2a3bc5161562028381070388cd17"
+  dependencies:
+    antlr4 "^4.7.0"
+
 sequence-parser@^0.4.8:
   version "0.4.8"
   resolved "https://registry.yarnpkg.com/sequence-parser/-/sequence-parser-0.4.8.tgz#42c827a8639b3db03323061d1cb18dd0449c3239"
@@ -7308,13 +7314,13 @@ vue-loader@^12.1.0:
     vue-style-loader "^3.0.0"
     vue-template-es2015-compiler "^1.2.2"
 
-vue-sequence@^0.4.10:
-  version "0.4.10"
-  resolved "https://registry.yarnpkg.com/vue-sequence/-/vue-sequence-0.4.10.tgz#476df7a27e7ec453e8add0b31759377698d3253a"
+vue-sequence@^0.4.11:
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/vue-sequence/-/vue-sequence-0.4.11.tgz#497466fed748984882c8cc724a21466037ba9cda"
   dependencies:
     babel-polyfill "^6.26.0"
     karma-chrome-launcher "^2.2.0"
-    sequence-parser "^0.4.8"
+    sequence-parser "^0.4.10"
     vue "^2.3.3"
     vuex "^2.4.0"
 
