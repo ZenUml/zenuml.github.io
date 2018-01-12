@@ -1,8 +1,8 @@
 import FileSaver from 'file-saver';
 import utils from './utils';
 import store from '../store';
-import welcomeFile from '../data/welcomeFile.md';
-// import getStarted from '../data/getStarted.seq';
+// import welcomeFile from '../data/welcomeFile.md';
+import getStarted from '../data/getStarted.seq';
 
 const dbVersion = 1;
 const dbStoreName = 'objects';
@@ -140,7 +140,7 @@ const localDbSvc = {
         }
 
         // Save welcome file content hash if not done already
-        const hash = utils.hash(welcomeFile);
+        const hash = utils.hash(getStarted);
         const welcomeFileHashes = store.getters['data/localSettings'].welcomeFileHashes;
         if (!welcomeFileHashes[hash]) {
           store.dispatch('data/patchLocalSettings', {
@@ -194,8 +194,8 @@ const localDbSvc = {
               } else {
                 // If still no ID, create a new file
                 store.dispatch('createFile', {
-                  name: 'Welcome file',
-                  text: welcomeFile,
+                  name: 'Get Started',
+                  text: getStarted,
                 })
                   // Set it as the current file
                   .then(newFile => store.commit('file/setCurrentId', newFile.id));
