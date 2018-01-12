@@ -32,6 +32,16 @@ const diffMatchPatch = new DiffMatchPatch();
 let instantPreview = true;
 let tokens;
 
+class SectionDesc {
+  constructor(section, previewElt, tocElt, html) {
+    this.section = section;
+    this.editorElt = section.elt;
+    this.previewElt = previewElt;
+    this.tocElt = tocElt;
+    this.html = html;
+  }
+}
+
 // Use a vue instance as an event bus
 const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils, {
   // Elements
@@ -90,7 +100,7 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
       //   return this.parsingCtx.sections;
       // },
       getCursorFocusRatio: () => {
-        if (store.getters['data/localSettings'].focusMode) {
+        if (store.getters['data/layoutSettings'].focusMode) {
           return 1;
         }
         return 0.15;
@@ -126,9 +136,13 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
       for (let i = 0; i < item[1].length; i += 1) {
         const section = this.conversionCtx.sectionList[sectionIdx];
         if (item[0] === 0) {
-          const sectionDesc = this.sectionDescList[sectionDescIdx];
+          let sectionDesc = this.sectionDescList[sectionDescIdx];
           sectionDescIdx += 1;
-          sectionDesc.editorElt = section.elt;
+          if (sectionDesc.editorElt !== section.elt) {
+            // Force textToPreviewDiffs computation
+            sectionDesc = new SectionDesc(
+              section, sectionDesc.previewElt, sectionDesc.tocElt, sectionDesc.html);
+          }
           newSectionDescList.push(sectionDesc);
           previewHtml += sectionDesc.html;
           sectionIdx += 1;
@@ -177,16 +191,11 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
           }
 
           previewHtml += html;
-          newSectionDescList.push({
-            section,
-            editorElt: section.elt,
-            previewElt: sectionPreviewElt,
-            tocElt: sectionTocElt,
-            html,
-          });
+          newSectionDescList.push(new SectionDesc(section, sectionPreviewElt, sectionTocElt, html));
         }
       }
     });
+
     this.sectionDescList = newSectionDescList;
     this.previewHtml = previewHtml.replace(/^\s+|\s+$/g, '');
     this.$emit('previewHtml', this.previewHtml);
@@ -232,7 +241,8 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
   }, 500),
 
   /**
-   * Make the diff between editor's markdown and preview's html.
+   * Compute the diffs between editor's markdown and preview's html
+   * asynchronously unless there is only one section to compute.
    */
   makeTextToPreviewDiffs() {
     if (editorSvc.sectionDescList &&
@@ -246,7 +256,9 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
               if (hasOne) {
                 return true;
               }
-              sectionDesc.previewText = sectionDesc.previewElt.textContent;
+              if (!sectionDesc.previewText) {
+                sectionDesc.previewText = sectionDesc.previewElt.textContent;
+              }
               sectionDesc.textToPreviewDiffs = diffMatchPatch.diff_main(
                 sectionDesc.section.text, sectionDesc.previewText);
               hasOne = true;
@@ -266,7 +278,7 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
   },
 
   /**
-   * Save editor selection/scroll state into the current file content.
+   * Save editor selection/scroll state into the store.
    */
   saveContentState: allowDebounce(() => {
     const scrollPosition = editorSvc.getScrollPosition() ||
@@ -333,12 +345,12 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
     this.tocElt = tocElt;
 
     this.createClEditor(editorElt);
+
     this.clEditor.on('contentChanged', (content, diffs, sectionList) => {
-      const parsingCtx = {
+      this.parsingCtx = {
         ...this.parsingCtx,
         sectionList,
       };
-      this.parsingCtx = parsingCtx;
       store.dispatch('updateCode', { code: content });
     });
     this.clEditor.undoMgr.on('undoStateChange', () => {
@@ -440,11 +452,11 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
     };
 
     const triggerImgCacheGc = debounce(() => {
-      Object.keys(imgCache).forEach((src) => {
-        const entries = imgCache[src]
-          .filter(imgElt => this.editorElt.contains(imgElt));
-        if (entries.length) {
-          imgCache[src] = entries;
+      Object.entries(imgCache).forEach(([src, entries]) => {
+        // Filter entries that are not attached to the DOM
+        const filteredEntries = entries.filter(imgElt => this.editorElt.contains(imgElt));
+        if (filteredEntries.length) {
+          imgCache[src] = filteredEntries;
         } else {
           delete imgCache[src];
         }
@@ -497,8 +509,6 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
     this.clEditor.on('contentChanged',
       (content, diffs, sectionList) => onEditorChanged(sectionList));
 
-    this.$emit('inited');
-
     // clEditorSvc.setPreviewElt(element[0].querySelector('.preview__inner-2'))
     // var previewElt = element[0].querySelector('.preview')
     // clEditorSvc.isPreviewTop = previewElt.scrollTop < 10
@@ -546,7 +556,7 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
 
     // Disable editor if hidden or if no content is loaded
     store.watch(
-      () => store.getters['content/current'].id && store.getters['layout/styles'].showEditor,
+      () => store.getters['content/isCurrentEditable'],
       editable => this.clEditor.toggleEditable(!!editable), {
         immediate: true,
       });
@@ -563,6 +573,7 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
       },
     );
     this.initHighlighters();
+    this.$emit('inited');
   },
 });
 

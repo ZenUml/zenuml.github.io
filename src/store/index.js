@@ -19,6 +19,7 @@ import modal from './modal';
 import notification from './notification';
 import queue from './queue';
 import userInfo from './userInfo';
+import workspace from './workspace';
 
 Vue.use(Vuex);
 
@@ -42,10 +43,10 @@ const store = new Vuex.Store({
     notification,
     queue,
     userInfo,
+    workspace,
     Store,
   },
   state: {
-    ready: false,
     offline: false,
     lastOfflineCheck: 0,
     minuteCounter: 0,
@@ -58,14 +59,11 @@ const store = new Vuex.Store({
       return result;
     },
     isSponsor: (state, getters) => {
-      const loginToken = getters['data/loginToken'];
-      return state.monetizeSponsor || (loginToken && loginToken.isSponsor);
+      const sponsorToken = getters['workspace/sponsorToken'];
+      return state.monetizeSponsor || (sponsorToken && sponsorToken.isSponsor);
     },
   },
   mutations: {
-    setReady: (state) => {
-      state.ready = true;
-    },
     setOffline: (state, value) => {
       state.offline = value;
     },
@@ -93,7 +91,7 @@ const store = new Vuex.Store({
       }
       return Promise.resolve();
     },
-    createFile({ state, getters, commit }, desc) {
+    createFile({ state, getters, commit }, desc = {}) {
       const id = utils.uid();
       commit('content/setItem', {
         id: `${id}/content`,

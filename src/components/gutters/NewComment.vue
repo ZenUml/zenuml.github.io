@@ -1,5 +1,5 @@
 <template>
-  <div class="comment comment--new" @keyup.esc="setIsCommenting(false)">
+  <div class="comment comment--new" @keyup.esc="cancelNewComment">
     <div class="comment__header flex flex--row flex--space-between flex--align-center">
       <div class="comment__user flex flex--row flex--align-center">
         <div class="comment__user-image">
@@ -14,14 +14,14 @@
       </div>
     </div>
     <div class="comment__buttons flex flex--row flex--end">
-      <button class="comment__button button" @click="setIsCommenting(false)">Cancel</button>
+      <button class="comment__button button" @click="cancelNewComment">Cancel</button>
       <button class="comment__button button" @click="addComment">Ok</button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Prism from 'prismjs';
 import UserImage from '../UserImage';
 import cledit from '../../libs/cledit';
@@ -33,13 +33,15 @@ export default {
   components: {
     UserImage,
   },
-  computed: mapGetters('data', [
+  computed: mapGetters('workspace', [
     'loginToken',
   ]),
   methods: {
     ...mapMutations('discussion', [
-      'setIsCommenting',
       'setNewCommentFocus',
+    ]),
+    ...mapActions('discussion', [
+      'cancelNewComment',
     ]),
     addComment() {
       const text = this.$store.state.discussion.newCommentText.trim();
@@ -99,16 +101,18 @@ export default {
         start, end,
       }));
 
+    const isSticky = this.$el.parentNode.classList.contains('sticky-comment');
+    const isVisible = () => isSticky || this.$store.state.discussion.stickyComment === null;
+
     this.$watch(
       () => this.$store.state.discussion.currentDiscussionId,
       () => this.$nextTick(() => {
-        if (this.$store.state.discussion.newCommentFocus) {
+        if (isVisible() && this.$store.state.discussion.newCommentFocus) {
           clEditor.focus();
         }
       }),
       { immediate: true });
 
-    const isSticky = this.$el.parentNode.classList.contains('sticky-comment');
     if (isSticky) {
       let scrollerMirrorElt;
       const getScrollerMirrorElt = () => {
@@ -126,10 +130,10 @@ export default {
     } else {
       // Maintain the state with the sticky comment
       this.$watch(
-        () => this.$store.state.discussion.stickyComment === null,
-        (isVisible) => {
-          clEditor.toggleEditable(isVisible);
-          if (isVisible) {
+        () => isVisible(),
+        (visible) => {
+          clEditor.toggleEditable(visible);
+          if (visible) {
             const text = this.$store.state.discussion.newCommentText;
             clEditor.setContent(text);
             const selection = this.$store.state.discussion.newCommentSelection;

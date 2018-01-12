@@ -1,17 +1,31 @@
 import store from '../../store';
 import googleHelper from './helpers/googleHelper';
 import providerRegistry from './providerRegistry';
+import utils from '../utils';
 
 export default providerRegistry.register({
   id: 'googleDriveAppData',
   getToken() {
-    return store.getters['data/loginToken'];
+    return store.getters['workspace/syncToken'];
   },
-  getChanges(token) {
-    return googleHelper.getChanges(token)
+  initWorkspace() {
+    // Nothing much to do since the main workspace isn't necessarily synchronized
+    return Promise.resolve()
+      .then(() => {
+        // Remove the URL hash
+        utils.setQueryParams();
+        // Return the main workspace
+        return store.getters['data/workspaces'].main;
+      });
+  },
+  getChanges() {
+    const syncToken = store.getters['workspace/syncToken'];
+    const startPageToken = store.getters['data/localSettings'].syncStartPageToken;
+    return googleHelper.getChanges(syncToken, startPageToken, true)
       .then((result) => {
         const changes = result.changes.filter((change) => {
           if (change.file) {
+            // Parse item from file name
             try {
               change.item = JSON.parse(change.file.name);
             } catch (e) {
@@ -24,31 +38,28 @@ export default providerRegistry.register({
               type: change.item.type,
               hash: change.item.hash,
             };
-            change.file = undefined;
           }
+          change.syncDataId = change.fileId;
           return true;
         });
-        changes.nextPageToken = result.nextPageToken;
+        changes.startPageToken = result.startPageToken;
         return changes;
       });
   },
-  setAppliedChanges(token, changes) {
-    const lastToken = store.getters['data/googleTokens'][token.sub];
-    if (changes.nextPageToken !== lastToken.nextPageToken) {
-      store.dispatch('data/setGoogleToken', {
-        ...lastToken,
-        nextPageToken: changes.nextPageToken,
-      });
-    }
+  setAppliedChanges(changes) {
+    store.dispatch('data/patchLocalSettings', {
+      syncStartPageToken: changes.startPageToken,
+    });
   },
-  saveItem(token, item, syncData, ifNotTooLate) {
+  saveSimpleItem(item, syncData, ifNotTooLate) {
+    const syncToken = store.getters['workspace/syncToken'];
     return googleHelper.uploadAppDataFile(
-        token,
-        JSON.stringify(item), ['appDataFolder'],
-        null,
-        syncData && syncData.id,
-        ifNotTooLate,
-      )
+      syncToken,
+      JSON.stringify(item),
+      undefined,
+      syncData && syncData.id,
+      ifNotTooLate,
+    )
       .then(file => ({
         // Build sync data
         id: file.id,
@@ -57,19 +68,20 @@ export default providerRegistry.register({
         hash: item.hash,
       }));
   },
-  removeItem(token, syncData, ifNotTooLate) {
-    return googleHelper.removeAppDataFile(token, syncData.id, ifNotTooLate)
-      .then(() => syncData);
+  removeItem(syncData, ifNotTooLate) {
+    const syncToken = store.getters['workspace/syncToken'];
+    return googleHelper.removeAppDataFile(syncToken, syncData.id, ifNotTooLate);
   },
   downloadContent(token, syncLocation) {
-    return this.downloadData(token, `${syncLocation.fileId}/content`);
+    return this.downloadData(`${syncLocation.fileId}/content`);
   },
-  downloadData(token, dataId) {
+  downloadData(dataId) {
     const syncData = store.getters['data/syncDataByItemId'][dataId];
     if (!syncData) {
       return Promise.resolve();
     }
-    return googleHelper.downloadAppDataFile(token, syncData.id)
+    const syncToken = store.getters['workspace/syncToken'];
+    return googleHelper.downloadAppDataFile(syncToken, syncData.id)
       .then((content) => {
         const item = JSON.parse(content);
         if (item.hash !== syncData.hash) {
@@ -84,26 +96,26 @@ export default providerRegistry.register({
       });
   },
   uploadContent(token, content, syncLocation, ifNotTooLate) {
-    return this.uploadData(token, content, `${syncLocation.fileId}/content`, ifNotTooLate)
+    return this.uploadData(content, `${syncLocation.fileId}/content`, ifNotTooLate)
       .then(() => syncLocation);
   },
-  uploadData(token, item, dataId, ifNotTooLate) {
+  uploadData(item, dataId, ifNotTooLate) {
     const syncData = store.getters['data/syncDataByItemId'][dataId];
     if (syncData && syncData.hash === item.hash) {
       return Promise.resolve();
     }
+    const syncToken = store.getters['workspace/syncToken'];
     return googleHelper.uploadAppDataFile(
-        token,
-        JSON.stringify({
-          id: item.id,
-          type: item.type,
-          hash: item.hash,
-        }),
-        ['appDataFolder'],
-        JSON.stringify(item),
-        syncData && syncData.id,
-        ifNotTooLate,
-      )
+      syncToken,
+      JSON.stringify({
+        id: item.id,
+        type: item.type,
+        hash: item.hash,
+      }),
+      JSON.stringify(item),
+      syncData && syncData.id,
+      ifNotTooLate,
+    )
       .then(file => store.dispatch('data/patchSyncData', {
         [file.id]: {
           // Build sync data
@@ -113,5 +125,25 @@ export default providerRegistry.register({
           hash: item.hash,
         },
       }));
+  },
+  listRevisions(token, fileId) {
+    const syncData = store.getters['data/syncDataByItemId'][`${fileId}/content`];
+    if (!syncData) {
+      return Promise.reject(); // No need for a proper error message.
+    }
+    return googleHelper.getAppDataFileRevisions(token, syncData.id)
+      .then(revisions => revisions.map(revision => ({
+        id: revision.id,
+        sub: revision.lastModifyingUser && revision.lastModifyingUser.permissionId,
+        created: new Date(revision.modifiedTime).getTime(),
+      })));
+  },
+  getRevisionContent(token, fileId, revisionId) {
+    const syncData = store.getters['data/syncDataByItemId'][`${fileId}/content`];
+    if (!syncData) {
+      return Promise.reject(); // No need for a proper error message.
+    }
+    return googleHelper.downloadAppDataFileRevision(token, syncData.id, revisionId)
+      .then(content => JSON.parse(content));
   },
 });

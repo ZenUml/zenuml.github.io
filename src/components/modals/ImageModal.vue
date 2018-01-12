@@ -36,11 +36,10 @@ export default modalTemplate({
   }),
   computed: {
     googlePhotosTokens() {
-      const googleToken = this.$store.getters['data/googleTokens'];
-      return Object.keys(googleToken)
-        .map(sub => googleToken[sub])
-        .filter(token => token.isPhotos)
-        .sort((token1, token2) => token1.name.localeCompare(token2.name));
+      const googleTokens = this.$store.getters['data/googleTokens'];
+      return Object.entries(googleTokens)
+        .filter(([, token]) => token.isPhotos)
+        .sort(([, token1], [, token2]) => token1.name.localeCompare(token2.name));
     },
   },
   methods: {

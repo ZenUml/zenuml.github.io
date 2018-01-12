@@ -44,14 +44,17 @@ module.exports = (app, serveV4) => {
     /* eslint-enable global-require, import/no-unresolved */
   }
 
-  // Serve callback.html in /app
+  // Serve landing.html
+  app.get('/', (req, res) => res.sendFile(resolvePath('static/landing/index.html')));
+  // Serve callback.html
   app.get('/oauth2/callback', (req, res) => res.sendFile(resolvePath('static/oauth2/callback.html')));
+  // Google Drive action receiver
+  app.get('/googleDriveAction', (req, res) =>
+    res.redirect(`./app#providerId=googleDrive&state=${encodeURIComponent(req.query.state)}`));
 
   // Serve static resources
   if (process.env.NODE_ENV === 'production') {
     if (serveV4) {
-      // Serve landing.html in /
-      app.get('/', (req, res) => res.sendFile(resolvePath('stackedit_v4/views/landing.html')));
       // Serve editor.html in /viewer
       app.get('/editor', (req, res) => res.sendFile(resolvePath('stackedit_v4/views/editor.html')));
       // Serve viewer.html in /viewer

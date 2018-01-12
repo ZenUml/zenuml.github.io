@@ -2,58 +2,44 @@ import yaml from 'js-yaml';
 import '../libs/clunderscore';
 import defaultProperties from '../data/defaultFileProperties.yml';
 
-const workspaceId = 'main';
 const origin = `${location.protocol}//${location.host}`;
 
-// For uid()
+// For utils.uid()
 const uidLength = 16;
 const crypto = window.crypto || window.msCrypto;
 const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const radix = alphabet.length;
 const array = new Uint32Array(uidLength);
 
-// For isUserActive
-const inactiveAfter = 2 * 60 * 1000; // 2 minutes
-let lastActivity;
-const setLastActivity = () => {
-  lastActivity = Date.now();
-};
-window.document.addEventListener('mousedown', setLastActivity);
-window.document.addEventListener('keydown', setLastActivity);
-window.document.addEventListener('touchstart', setLastActivity);
-
-// For isWindowFocused
-let lastFocus;
-const lastFocusKey = `${workspaceId}/lastWindowFocus`;
-const lastOpened = parseInt(localStorage[lastFocusKey], 10) || 0;
-const setLastFocus = () => {
-  lastFocus = Date.now();
-  localStorage[lastFocusKey] = lastFocus;
-  setLastActivity();
-};
-setLastFocus();
-window.addEventListener('focus', setLastFocus);
-
-// For parseQueryParams()
+// For utils.parseQueryParams()
 const parseQueryParams = (params) => {
   const result = {};
   params.split('&').forEach((param) => {
     const [key, value] = param.split('=').map(decodeURIComponent);
-    result[key] = value;
+    if (key) {
+      result[key] = value;
+    }
   });
   return result;
 };
 
-// For addQueryParams()
-const urlParser = window.document.createElement('a');
+// For utils.addQueryParams()
+const urlParser = document.createElement('a');
 
 export default {
-  workspaceId,
-  origin,
-  queryParams: parseQueryParams(location.hash.slice(1)),
-  oauth2RedirectUri: `${origin}/oauth2/callback`,
-  lastOpened,
   cleanTrashAfter: 7 * 24 * 60 * 60 * 1000, // 7 days
+  origin,
+  oauth2RedirectUri: `${origin}/oauth2/callback`,
+  queryParams: parseQueryParams(location.hash.slice(1)),
+  setQueryParams(params = {}) {
+    this.queryParams = params;
+    const serializedParams = Object.entries(this.queryParams).map(([key, value]) =>
+      `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
+    const hash = serializedParams && `#${serializedParams}`;
+    if (location.hash !== hash) {
+      location.hash = hash;
+    }
+  },
   types: [
     'contentState',
     'syncedContent',
@@ -63,6 +49,12 @@ export default {
     'syncLocation',
     'publishLocation',
     'data',
+  ],
+  localStorageDataIds: [
+    'workspaces',
+    'settings',
+    'layoutSettings',
+    'tokens',
   ],
   textMaxLength: 150000,
   sanitizeText(text) {
@@ -102,6 +94,20 @@ export default {
     }
     return hash;
   },
+  addItemHash(item) {
+    return {
+      ...item,
+      hash: this.hash(this.serializeObject({
+        ...item,
+        // These properties must not be part of the hash
+        history: undefined,
+        hash: undefined,
+      })),
+    };
+  },
+  makeWorkspaceId(params) {
+    return Math.abs(this.hash(this.serializeObject(params))).toString(36);
+  },
   encodeBase64(str) {
     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
       (match, p1) => String.fromCharCode(`0x${p1}`)));
@@ -116,7 +122,9 @@ export default {
     const override = (obj, opt) => {
       const objType = Object.prototype.toString.call(obj);
       const optType = Object.prototype.toString.call(opt);
-      if (objType !== optType) {
+      if (obj === undefined) {
+        return opt;
+      } else if (objType !== optType) {
         return obj;
       } else if (objType !== '[object Object]') {
         return opt === undefined ? obj : opt;
@@ -137,26 +145,43 @@ export default {
   setInterval(func, interval) {
     return setInterval(() => func(), this.randomize(interval));
   },
-  isWindowFocused() {
-    return parseInt(localStorage[lastFocusKey], 10) === lastFocus;
-  },
-  isUserActive() {
-    return lastActivity > Date.now() - inactiveAfter && this.isWindowFocused();
-  },
   parseQueryParams,
-  addQueryParams(url = '', params = {}) {
+  addQueryParams(url = '', params = {}, hash = false) {
     const keys = Object.keys(params).filter(key => params[key] != null);
-    if (!keys.length) {
-      return url;
-    }
     urlParser.href = url;
-    if (urlParser.search) {
-      urlParser.search += '&';
-    } else {
-      urlParser.search = '?';
+    if (!keys.length) {
+      return urlParser.href;
     }
-    urlParser.search += keys.map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
+    const serializedParams = keys.map(key =>
+      `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
+    if (hash) {
+      if (urlParser.hash) {
+        urlParser.hash += '&';
+      } else {
+        urlParser.hash = '#';
+      }
+      urlParser.hash += serializedParams;
+    } else {
+      if (urlParser.search) {
+        urlParser.search += '&';
+      } else {
+        urlParser.search = '?';
+      }
+      urlParser.search += serializedParams;
+    }
     return urlParser.href;
+  },
+  resolveUrl(url) {
+    return this.addQueryParams(url);
+  },
+  createHiddenIframe(url) {
+    const iframeElt = document.createElement('iframe');
+    iframeElt.style.position = 'absolute';
+    iframeElt.style.left = '-9999px';
+    iframeElt.style.width = '1px';
+    iframeElt.style.height = '1px';
+    iframeElt.src = url;
+    return iframeElt;
   },
   wrapRange(range, eltProperties) {
     const rangeLength = `${range}`.length;
@@ -178,8 +203,8 @@ export default {
             startOffset = 0;
           }
           const elt = document.createElement('span');
-          Object.keys(eltProperties).forEach((key) => {
-            elt[key] = eltProperties[key];
+          Object.entries(eltProperties).forEach(([key, value]) => {
+            elt[key] = value;
           });
           treeWalker.currentNode.parentNode.insertBefore(elt, treeWalker.currentNode);
           elt.appendChild(treeWalker.currentNode);

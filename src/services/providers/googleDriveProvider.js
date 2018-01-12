@@ -17,6 +17,97 @@ export default providerRegistry.register({
     const token = this.getToken(location);
     return `${location.driveFileId} — ${token.name}`;
   },
+  initAction() {
+    const state = googleHelper.driveState || {};
+    return state.userId && Promise.resolve()
+      .then(() => {
+        // Try to find the token corresponding to the user ID
+        const token = store.getters['data/googleTokens'][state.userId];
+        // If not found or not enough permission, popup an OAuth2 window
+        return token && token.isDrive ? token : store.dispatch('modal/open', {
+          type: 'googleDriveAccount',
+          onResolve: () => googleHelper.addDriveAccount(
+            !store.getters['data/localSettings'].googleDriveRestrictedAccess,
+            state.userId,
+          ),
+        });
+      })
+      .then((token) => {
+        const openWorkspaceIfExists = (file) => {
+          const folderId = file
+            && file.appProperties
+            && file.appProperties.folderId;
+          if (folderId) {
+            // See if we have the corresponding workspace
+            const workspaceParams = {
+              providerId: 'googleDriveWorkspace',
+              folderId,
+            };
+            const workspaceId = utils.makeWorkspaceId(workspaceParams);
+            const workspace = store.getters['data/sanitizedWorkspaces'][workspaceId];
+            // If we have the workspace, open it by changing the current URL
+            if (workspace) {
+              utils.setQueryParams(workspaceParams);
+            }
+          }
+        };
+
+        switch (state.action) {
+          case 'create':
+          default:
+            // See if folder is part of a workspace we can open
+            return googleHelper.getFile(token, state.folderId)
+              .then((folder) => {
+                folder.appProperties = folder.appProperties || {};
+                googleHelper.driveActionFolder = folder;
+                openWorkspaceIfExists(folder);
+              }, (err) => {
+                if (!err || err.status !== 404) {
+                  throw err;
+                }
+                // We received an HTTP 404 meaning we have no permission to read the folder
+                googleHelper.driveActionFolder = { id: state.folderId };
+              });
+
+          case 'open': {
+            const getOneFile = (ids = state.ids || []) => {
+              const id = ids.shift();
+              return id && googleHelper.getFile(token, id)
+                .then((file) => {
+                  file.appProperties = file.appProperties || {};
+                  googleHelper.driveActionFiles.push(file);
+                  return getOneFile(ids);
+                });
+            };
+
+            return getOneFile()
+              // Check if first file is part of a workspace
+              .then(() => openWorkspaceIfExists(googleHelper.driveActionFiles[0]));
+          }
+        }
+      });
+  },
+  performAction() {
+    return Promise.resolve()
+      .then(() => {
+        const state = googleHelper.driveState || {};
+        const token = store.getters['data/googleTokens'][state.userId];
+        switch (token && state.action) {
+          case 'create':
+            return store.dispatch('createFile')
+              .then((file) => {
+                store.commit('file/setCurrentId', file.id);
+                // Return a new syncLocation
+                return this.makeLocation(token, null, googleHelper.driveActionFolder.id);
+              });
+          case 'open':
+            return store.dispatch('queue/enqueue',
+              () => this.openFiles(token, googleHelper.driveActionFiles));
+          default:
+            return null;
+        }
+      });
+  },
   downloadContent(token, syncLocation) {
     return googleHelper.downloadFile(token, syncLocation.driveFileId)
       .then(content => providerUtils.parseContent(content, syncLocation));
@@ -32,6 +123,7 @@ export default providerRegistry.register({
       token,
       name,
       parents,
+      undefined,
       providerUtils.serializeContent(content),
       undefined,
       syncLocation.driveFileId,
@@ -47,6 +139,7 @@ export default providerRegistry.register({
       token,
       metadata.title,
       [],
+      undefined,
       html,
       publishLocation.templateId ? 'text/html' : undefined,
       publishLocation.driveFileId,
@@ -58,7 +151,7 @@ export default providerRegistry.register({
   },
   openFiles(token, driveFiles) {
     const openOneFile = () => {
-      const driveFile = driveFiles.pop();
+      const driveFile = driveFiles.shift();
       if (!driveFile) {
         return null;
       }

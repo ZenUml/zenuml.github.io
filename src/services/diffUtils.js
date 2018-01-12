@@ -64,28 +64,32 @@ function stripDiscussionOffsets(objectMap) {
 }
 
 function restoreDiscussionOffsets(content, markerKeys) {
-  // Init offsets (just in case)
-  Object.keys(content.discussions).forEach((discussionId) => {
-    const discussion = content.discussions[discussionId];
-    discussion.start = 0;
-    discussion.end = 0;
-  });
-  // Go through markers
-  let count = 0;
-  const maxIdx = markerKeys.length;
-  content.text = content.text.replace(/[\ue000-\uf8ff]/g, (match, offset) => {
-    const idx = match.charCodeAt(0) - 0xe000;
-    if (idx >= maxIdx) {
-      return match;
-    }
-    const markerKey = markerKeys[idx];
-    const discussion = content.discussions[markerKey.id];
-    if (discussion) {
-      discussion[markerKey.offsetName] = offset - count;
-    }
-    count += 1;
-    return '';
-  });
+  if (markerKeys.length) {
+    // Go through markers
+    let count = 0;
+    content.text = content.text.replace(
+      new RegExp(`[\ue000-${String.fromCharCode((0xe000 + markerKeys.length) - 1)}]`, 'g'),
+      (match, offset) => {
+        const idx = match.charCodeAt(0) - 0xe000;
+        const markerKey = markerKeys[idx];
+        const discussion = content.discussions[markerKey.id];
+        if (discussion) {
+          discussion[markerKey.offsetName] = offset - count;
+        }
+        count += 1;
+        return '';
+      });
+    // Sanitize offsets
+    Object.keys(content.discussions).forEach((discussionId) => {
+      const discussion = content.discussions[discussionId];
+      if (discussion.start === undefined) {
+        discussion.start = discussion.end || 0;
+      }
+      if (discussion.end === undefined || discussion.end < discussion.start) {
+        discussion.end = discussion.start;
+      }
+    });
+  }
 }
 
 function mergeText(serverText, clientText, lastMergedText) {
@@ -154,12 +158,18 @@ function mergeContent(serverContent, clientContent, lastMergedContent = {}) {
   const serverText = makePatchableText(serverContent, markerKeys, markerIdxMap);
   const clientText = makePatchableText(clientContent, markerKeys, markerIdxMap);
   const isServerTextChanges = lastMergedText !== serverText;
+  const isClientTextChanges = lastMergedText !== clientText;
   const isTextSynchronized = serverText === clientText;
+  let text = clientText;
+  if (!isTextSynchronized && isServerTextChanges) {
+    text = serverText;
+    if (isClientTextChanges) {
+      text = mergeText(serverText, clientText, lastMergedText);
+    }
+  }
 
   const result = {
-    text: isTextSynchronized || !isServerTextChanges
-      ? clientText
-      : mergeText(serverText, clientText, lastMergedText),
+    text,
     properties: mergeValues(
       serverContent.properties,
       clientContent.properties,

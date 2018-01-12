@@ -2,25 +2,33 @@ import FileSaver from 'file-saver';
 import utils from './utils';
 import store from '../store';
 import welcomeFile from '../data/welcomeFile.md';
-import getStarted from '../data/getStarted.seq';
+// import getStarted from '../data/getStarted.seq';
 
 const dbVersion = 1;
-const dbVersionKey = `${utils.workspaceId}/localDbVersion`;
 const dbStoreName = 'objects';
-const exportBackup = utils.queryParams.exportBackup;
-if (exportBackup) {
-  location.hash = '';
-}
-
+const exportWorkspace = utils.queryParams.exportWorkspace;
+const resetApp = utils.queryParams.reset;
 const deleteMarkerMaxAge = 1000;
 const checkSponsorshipAfter = (5 * 60 * 1000) + (30 * 1000); // tokenExpirationMargin + 30 sec
+
+const getDbName = (workspaceId) => {
+  let dbName = 'stackedit-db';
+  if (workspaceId !== 'main') {
+    dbName += `-${workspaceId}`;
+  }
+  return dbName;
+};
 
 class Connection {
   constructor() {
     this.getTxCbs = [];
 
-    // Init connexion
-    const request = indexedDB.open('stackedit-db', dbVersion);
+    // Make the DB name
+    const workspaceId = store.getters['workspace/currentWorkspace'].id;
+    this.dbName = getDbName(workspaceId);
+
+    // Init connection
+    const request = indexedDB.open(this.dbName, dbVersion);
 
     request.onerror = () => {
       throw new Error("Can't connect to IndexedDB.");
@@ -28,8 +36,7 @@ class Connection {
 
     request.onsuccess = (event) => {
       this.db = event.target.result;
-      localStorage[dbVersionKey] = this.db.version; // Safari does not support onversionchange
-      this.db.onversionchange = () => window.location.reload();
+      this.db.onversionchange = () => location.reload();
 
       this.getTxCbs.forEach(({ onTx, onError }) => this.createTx(onTx, onError));
       this.getTxCbs = null;
@@ -40,7 +47,7 @@ class Connection {
       const oldVersion = event.oldVersion || 0;
 
       // We don't use 'break' in this switch statement,
-      // the fall-through behaviour is what we want.
+      // the fall-through behavior is what we want.
       /* eslint-disable no-fallthrough */
       switch (oldVersion) {
         case 0:
@@ -68,11 +75,6 @@ class Connection {
       return this.getTxCbs.push({ onTx, onError });
     }
 
-    // If DB version has changed (Safari support)
-    if (parseInt(localStorage[dbVersionKey], 10) !== this.db.version) {
-      return window.location.reload();
-    }
-
     // Open transaction in read/write will prevent conflict with other tabs
     const tx = this.db.transaction(this.db.objectStoreNames, 'readwrite');
     tx.onerror = onError;
@@ -81,21 +83,189 @@ class Connection {
   }
 }
 
-const hashMap = {};
-utils.types.forEach((type) => {
-  hashMap[type] = Object.create(null);
-});
-
 const contentTypes = {
   content: true,
   contentState: true,
   syncedContent: true,
 };
 
+const hashMap = {};
+utils.types.forEach((type) => {
+  hashMap[type] = Object.create(null);
+});
+const lsHashMap = Object.create(null);
+
 const localDbSvc = {
   lastTx: 0,
   hashMap,
-  connection: new Connection(),
+  connection: null,
+
+  /**
+   * Create the connection and start syncing.
+   */
+  init() {
+    return Promise.resolve()
+      .then(() => {
+        // Reset the app if reset flag was passed
+        if (resetApp) {
+          return Promise.all(
+            Object.keys(store.getters['data/workspaces'])
+              .map(workspaceId => localDbSvc.removeWorkspace(workspaceId)),
+          )
+            .then(() => utils.localStorageDataIds.forEach((id) => {
+              // Clean data stored in localStorage
+              localStorage.removeItem(`data/${id}`);
+            }))
+            .then(() => {
+              location.reload();
+              throw new Error('reload');
+            });
+        }
+
+        // Create the connection
+        this.connection = new Connection();
+
+        // Load the DB
+        return localDbSvc.sync();
+      })
+      .then(() => {
+        // If exportWorkspace parameter was provided
+        if (exportWorkspace) {
+          const backup = JSON.stringify(store.getters.allItemMap);
+          const blob = new Blob([backup], {
+            type: 'text/plain;charset=utf-8',
+          });
+          FileSaver.saveAs(blob, 'StackEdit workspace.json');
+          return;
+        }
+
+        // Save welcome file content hash if not done already
+        const hash = utils.hash(welcomeFile);
+        const welcomeFileHashes = store.getters['data/localSettings'].welcomeFileHashes;
+        if (!welcomeFileHashes[hash]) {
+          store.dispatch('data/patchLocalSettings', {
+            welcomeFileHashes: {
+              ...welcomeFileHashes,
+              [hash]: 1,
+            },
+          });
+        }
+
+        // If app was last opened 7 days ago and synchronization is off
+        if (!store.getters['workspace/syncToken'] &&
+          (store.state.workspace.lastFocus + utils.cleanTrashAfter < Date.now())
+        ) {
+          // Clean files
+          store.getters['file/items']
+            .filter(file => file.parentId === 'trash') // If file is in the trash
+            .forEach(file => store.dispatch('deleteFile', file.id));
+        }
+
+        // Enable sponsorship
+        if (utils.queryParams.paymentSuccess) {
+          location.hash = ''; // PaymentSuccess param is always on its own
+          store.dispatch('modal/paymentSuccess');
+          const sponsorToken = store.getters['workspace/sponsorToken'];
+          // Force check sponsorship after a few seconds
+          const currentDate = Date.now();
+          if (sponsorToken && sponsorToken.expiresOn > currentDate - checkSponsorshipAfter) {
+            store.dispatch('data/setGoogleToken', {
+              ...sponsorToken,
+              expiresOn: currentDate - checkSponsorshipAfter,
+            });
+          }
+        }
+
+        // Sync local DB periodically
+        utils.setInterval(() => localDbSvc.sync(), 1000);
+
+        // watch current file changing
+        store.watch(
+          () => store.getters['file/current'].id,
+          () => {
+            // See if currentFile is real, ie it has an ID
+            const currentFile = store.getters['file/current'];
+            // If current file has no ID, get the most recent file
+            if (!currentFile.id) {
+              const recentFile = store.getters['file/lastOpened'];
+              // Set it as the current file
+              if (recentFile.id) {
+                store.commit('file/setCurrentId', recentFile.id);
+              } else {
+                // If still no ID, create a new file
+                store.dispatch('createFile', {
+                  name: 'Welcome file',
+                  text: welcomeFile,
+                })
+                  // Set it as the current file
+                  .then(newFile => store.commit('file/setCurrentId', newFile.id));
+              }
+            } else {
+              Promise.resolve()
+                // Load contentState from DB
+                .then(() => localDbSvc.loadContentState(currentFile.id))
+                // Load syncedContent from DB
+                .then(() => localDbSvc.loadSyncedContent(currentFile.id))
+                // Load content from DB
+                .then(() => localDbSvc.loadItem(`${currentFile.id}/content`))
+                .then(
+                  () => {
+                    // Set last opened file
+                    store.dispatch('data/setLastOpenedId', currentFile.id);
+                    // Cancel new discussion
+                    store.commit('discussion/setCurrentDiscussionId');
+                    // Open the gutter if file contains discussions
+                    store.commit('discussion/setCurrentDiscussionId',
+                      store.getters['discussion/nextDiscussionId']);
+                  },
+                  (err) => {
+                    // Failure (content is not available), go back to previous file
+                    const lastOpenedFile = store.getters['file/lastOpened'];
+                    store.commit('file/setCurrentId', lastOpenedFile.id);
+                    throw err;
+                  },
+                )
+                .catch((err) => {
+                  console.error(err); // eslint-disable-line no-console
+                  store.dispatch('notification/error', err);
+                });
+            }
+          }, {
+            immediate: true,
+          });
+      });
+  },
+
+  /**
+   * Sync data items stored in the localStorage.
+   */
+  syncLocalStorage() {
+    utils.localStorageDataIds.forEach((id) => {
+      const key = `data/${id}`;
+
+      // Skip reloading the layoutSettings
+      if (id !== 'layoutSettings' || !lsHashMap[id]) {
+        try {
+          // Try to parse the item from the localStorage
+          const storedItem = JSON.parse(localStorage.getItem(key));
+          if (storedItem.hash && lsHashMap[id] !== storedItem.hash) {
+            // Item has changed, replace it in the store
+            store.commit('data/setItem', storedItem);
+            lsHashMap[id] = storedItem.hash;
+          }
+        } catch (e) {
+          // Ignore parsing issue
+        }
+      }
+
+      // Write item if different from stored one
+      const item = store.state.data.lsItemMap[id];
+      if (item && item.hash !== lsHashMap[id]) {
+        localStorage.setItem(key, JSON.stringify(item));
+        lsHashMap[id] = item.hash;
+      }
+    });
+  },
 
   /**
    * Return a promise that will be resolved once the synchronization between the store and the
@@ -104,9 +274,15 @@ const localDbSvc = {
    */
   sync() {
     return new Promise((resolve, reject) => {
+      // Create the DB transaction
       this.connection.createTx((tx) => {
+        // Look for DB changes and apply them to the store
         this.readAll(tx, (storeItemMap) => {
+          // Persist all the store changes into the DB
           this.writeAll(storeItemMap, tx);
+          // Sync localStorage
+          this.syncLocalStorage();
+          // Done
           resolve();
         });
       }, () => reject(new Error('Local DB access error.')));
@@ -130,7 +306,7 @@ const localDbSvc = {
           lastTx = item.tx;
           if (this.lastTx && item.tx - this.lastTx > deleteMarkerMaxAge) {
             // We may have missed some delete markers
-            window.location.reload();
+            location.reload();
             return;
           }
         }
@@ -187,8 +363,7 @@ const localDbSvc = {
     });
 
     // Put changes
-    Object.keys(storeItemMap).forEach((id) => {
-      const storeItem = storeItemMap[id];
+    Object.entries(storeItemMap).forEach(([, storeItem]) => {
       // Store object has changed
       if (this.hashMap[storeItem.type][storeItem.id] !== storeItem.hash) {
         const item = {
@@ -219,7 +394,7 @@ const localDbSvc = {
       // DB item is different from the corresponding store item
       this.hashMap[dbItem.type][dbItem.id] = dbItem.hash;
       // Update content only if it exists in the store
-      if (existingStoreItem || !contentTypes[dbItem.type] || exportBackup) {
+      if (existingStoreItem || !contentTypes[dbItem.type] || exportWorkspace) {
         // Put item in the store
         dbItem.tx = undefined;
         store.commit(`${dbItem.type}/setItem`, dbItem);
@@ -267,11 +442,11 @@ const localDbSvc = {
     return this.sync()
       .then(() => {
         // Keep only last opened files in memory
-        const lastOpenedFileIds = new Set(store.getters['data/lastOpenedIds']);
+        const lastOpenedFileIdSet = new Set(store.getters['data/lastOpenedIds']);
         Object.keys(contentTypes).forEach((type) => {
           store.getters[`${type}/items`].forEach((item) => {
             const [fileId] = item.id.split('/');
-            if (!lastOpenedFileIds.has(fileId)) {
+            if (!lastOpenedFileIdSet.has(fileId)) {
               // Remove item from the store
               store.commit(`${type}/deleteItem`, item.id);
             }
@@ -281,18 +456,25 @@ const localDbSvc = {
   },
 
   /**
-   * Drop the database
+   * Drop the database and clean the localStorage for the specified workspaceId.
    */
-  removeDb() {
+  removeWorkspace(id) {
+    const workspaces = {
+      ...this.workspaces,
+    };
+    delete workspaces[id];
+    store.dispatch('data/setWorkspaces', workspaces);
+    this.syncLocalStorage();
     return new Promise((resolve, reject) => {
-      const request = indexedDB.deleteDatabase('stackedit-db');
+      const dbName = getDbName(id);
+      const request = indexedDB.deleteDatabase(dbName);
       request.onerror = reject;
       request.onsuccess = resolve;
     })
-    .then(() => {
-      localStorage.removeItem(dbVersionKey);
-      window.location.reload();
-    }, () => store.dispatch('notification/error', 'Could not delete local database.'));
+      .then(() => {
+        localStorage.removeItem(`${id}/lastSyncActivity`);
+        localStorage.removeItem(`${id}/lastWindowFocus`);
+      });
   },
 };
 
@@ -303,121 +485,5 @@ const loader = type => fileId => localDbSvc.loadItem(`${fileId}/${type}`)
   }));
 localDbSvc.loadSyncedContent = loader('syncedContent');
 localDbSvc.loadContentState = loader('contentState');
-
-const ifNoId = cb => (obj) => {
-  if (obj.id) {
-    return obj;
-  }
-  return cb();
-};
-
-// Load the DB on boot
-localDbSvc.sync()
-  .then(() => {
-    if (exportBackup) {
-      const backup = JSON.stringify(store.getters.allItemMap);
-      const blob = new Blob([backup], {
-        type: 'text/plain;charset=utf-8',
-      });
-      FileSaver.saveAs(blob, 'StackEdit workspace.json');
-      return;
-    }
-
-    // Set the ready flag
-    store.commit('setReady');
-
-    // Save welcome file content hash if not done already
-    const hash = utils.hash(welcomeFile);
-    const welcomeFileHashes = store.getters['data/localSettings'].welcomeFileHashes;
-    if (!welcomeFileHashes[hash]) {
-      store.dispatch('data/patchLocalSettings', {
-        welcomeFileHashes: {
-          ...welcomeFileHashes,
-          [hash]: 1,
-        },
-      });
-    }
-
-    // If app was last opened 7 days ago and synchronization is off
-    if (!store.getters['data/loginToken'] &&
-      (utils.lastOpened + utils.cleanTrashAfter < Date.now())
-    ) {
-      // Clean files
-      store.getters['file/items']
-        .filter(file => file.parentId === 'trash') // If file is in the trash
-        .forEach(file => store.dispatch('deleteFile', file.id));
-    }
-
-    // Enable sponsorship
-    if (utils.queryParams.paymentSuccess) {
-      location.hash = '';
-      store.dispatch('modal/paymentSuccess');
-      const loginToken = store.getters['data/loginToken'];
-      // Force check sponsorship after a few seconds
-      const currentDate = Date.now();
-      if (loginToken && loginToken.expiresOn > currentDate - checkSponsorshipAfter) {
-        store.dispatch('data/setGoogleToken', {
-          ...loginToken,
-          expiresOn: currentDate - checkSponsorshipAfter,
-        });
-      }
-    }
-
-    // watch file changing
-    store.watch(
-      () => store.getters['file/current'].id,
-      () => Promise.resolve(store.getters['file/current'])
-        // If current file has no ID, get the most recent file
-        .then(ifNoId(() => store.getters['file/lastOpened']))
-        // If still no ID, create a new file
-        .then(ifNoId(() => store.dispatch('createFile', {
-          name: 'Welcome file',
-          // text: welcomeFile,
-          text: getStarted,
-        })))
-        .then((currentFile) => {
-          // Fix current file ID
-          if (store.getters['file/current'].id !== currentFile.id) {
-            store.commit('file/setCurrentId', currentFile.id);
-            // Wait for the next watch tick
-            return null;
-          }
-
-          return Promise.resolve()
-            // Load contentState from DB
-            .then(() => localDbSvc.loadContentState(currentFile.id))
-            // Load syncedContent from DB
-            .then(() => localDbSvc.loadSyncedContent(currentFile.id))
-            // Load content from DB
-            .then(() => localDbSvc.loadItem(`${currentFile.id}/content`))
-            .then(
-              () => {
-                // Set last opened file
-                store.dispatch('data/setLastOpenedId', currentFile.id);
-                // Cancel new discussion
-                store.commit('discussion/setCurrentDiscussionId');
-                // Open the gutter if file contains discussions
-                store.commit('discussion/setCurrentDiscussionId',
-                  store.getters['discussion/nextDiscussionId']);
-              },
-              (err) => {
-                // Failure (content is not available), go back to previous file
-                const lastOpenedFile = store.getters['file/lastOpened'];
-                store.commit('file/setCurrentId', lastOpenedFile.id);
-                throw err;
-              },
-            );
-        })
-        .catch((err) => {
-          console.error(err); // eslint-disable-line no-console
-          store.dispatch('notification/error', err);
-        }),
-      {
-        immediate: true,
-      });
-  });
-
-// Sync local DB periodically
-utils.setInterval(() => localDbSvc.sync(), 1000);
 
 export default localDbSvc;

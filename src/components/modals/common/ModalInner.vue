@@ -31,16 +31,18 @@ export default {
   methods: {
     sponsor() {
       Promise.resolve()
-        .then(() => !this.$store.getters['data/loginToken'] &&
-          this.$store.dispatch('modal/signInForSponsorship') // If user has to sign in
-            .then(() => googleHelper.signin())
-            .then(() => syncSvc.requestSync()))
+        .then(() => !this.$store.getters['workspace/sponsorToken'] &&
+          // If user has to sign in
+          this.$store.dispatch('modal/signInForSponsorship', {
+            onResolve: () => googleHelper.signin()
+              .then(() => syncSvc.requestSync()),
+          }))
         .then(() => {
           if (!this.$store.getters.isSponsor) {
             this.$store.dispatch('modal/open', 'sponsor');
           }
         })
-        .catch(() => { }); // Cancel
+        .catch(() => {}); // Cancel
     },
   },
 };
@@ -53,7 +55,7 @@ export default {
   position: absolute;
   top: 8px;
   right: 8px;
-  color: rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.5);
   width: 30px;
   height: 30px;
   padding: 2px;
@@ -61,7 +63,7 @@ export default {
   &:active,
   &:focus,
   &:hover {
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.67);
   }
 }
 

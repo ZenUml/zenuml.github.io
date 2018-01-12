@@ -4,8 +4,7 @@ import editorSvc from '../../services/editorSvc';
 import syncSvc from '../../services/syncSvc';
 
 // Skip shortcuts if modal is open or editor is hidden
-Mousetrap.prototype.stopCallback = () => store.getters['modal/config'] ||
-  !store.getters['content/current'].id || !store.getters['layout/styles'].showEditor;
+Mousetrap.prototype.stopCallback = () => store.getters['modal/config'] || !store.getters['content/isCurrentEditable'];
 
 const pagedownHandler = name => () => {
   editorSvc.pagedownEditor.uiManager.doClick(name);
@@ -68,8 +67,7 @@ store.watch(
     Mousetrap.reset();
 
     const shortcuts = computedSettings.shortcuts;
-    Object.keys(shortcuts).forEach((key) => {
-      const shortcut = shortcuts[key];
+    Object.entries(shortcuts).forEach(([key, shortcut]) => {
       if (shortcut) {
         const method = `${shortcut.method || shortcut}`;
         let params = shortcut.params || [];

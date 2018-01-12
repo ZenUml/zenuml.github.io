@@ -14,8 +14,10 @@
     <div class="side-bar__inner">
       <main-menu v-if="panel === 'menu'"></main-menu>
       <example-menu v-if="panel === 'example'"></example-menu>
+      <workspaces-menu v-if="panel === 'workspaces'"></workspaces-menu>
       <sync-menu v-else-if="panel === 'sync'"></sync-menu>
       <publish-menu v-else-if="panel === 'publish'"></publish-menu>
+      <history-menu v-else-if="panel === 'history'"></history-menu>
       <export-menu v-else-if="panel === 'export'"></export-menu>
       <more-menu v-else-if="panel === 'more'"></more-menu>
       <div v-else-if="panel === 'help'" class="side-bar__panel side-bar__panel--help">
@@ -34,8 +36,10 @@ import { mapActions } from 'vuex';
 import Toc from './Toc';
 import MainMenu from './menus/MainMenu';
 import ExampleMenu from './menus/ExampleMenu';
+import WorkspacesMenu from './menus/WorkspacesMenu';
 import SyncMenu from './menus/SyncMenu';
 import PublishMenu from './menus/PublishMenu';
+import HistoryMenu from './menus/HistoryMenu';
 import ExportMenu from './menus/ExportMenu';
 import MoreMenu from './menus/MoreMenu';
 import markdownSample from '../data/markdownSample.md';
@@ -43,11 +47,13 @@ import markdownConversionSvc from '../services/markdownConversionSvc';
 
 const panelNames = {
   menu: 'Menu',
+  workspaces: 'Workspaces',
   example: 'Examples',
   help: 'Markdown cheat sheet',
   toc: 'Table of contents',
   sync: 'Synchronize',
   publish: 'Publish',
+  history: 'File history',
   export: 'Export to disk',
   more: 'More',
 };
@@ -57,8 +63,10 @@ export default {
     Toc,
     MainMenu,
     ExampleMenu,
+    WorkspacesMenu,
     SyncMenu,
     PublishMenu,
+    HistoryMenu,
     ExportMenu,
     MoreMenu,
   },
@@ -68,7 +76,7 @@ export default {
   computed: {
     panel() {
       return 'example';
-      // return this.$store.getters['data/localSettings'].sideBarPanel;
+      // return this.$store.getters['data/layoutSettings'].sideBarPanel;
     },
     panelName() {
       return panelNames[this.panel];
@@ -95,6 +103,7 @@ export default {
   hr {
     margin: 10px 40px;
     display: none;
+    border-top: 1px solid $hr-color;
   }
 
   * + hr {
@@ -116,6 +125,12 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
+
+  &::after {
+    content: '';
+    display: block;
+    height: 40px;
+  }
 }
 
 .side-bar__panel--hidden {
@@ -123,11 +138,11 @@ export default {
 }
 
 .side-bar__panel--menu {
-  padding: 10px 10px 50px;
+  padding: 10px;
 }
 
 .side-bar__panel--help {
-  padding: 0 10px 40px 20px;
+  padding: 0 10px 0 20px;
 
   pre {
     font-size: 0.9em;
@@ -148,7 +163,7 @@ export default {
 
 .side-bar__info {
   padding: 10px;
-  margin: 0 -10px;
+  margin: -10px -10px 0;
   background-color: $info-bg;
 
   p {

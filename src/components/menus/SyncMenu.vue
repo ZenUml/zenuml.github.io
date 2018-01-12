@@ -106,8 +106,8 @@ export default {
     ...mapState('queue', [
       'isSyncRequested',
     ]),
-    ...mapGetters('data', [
-      'loginToken',
+    ...mapGetters('workspace', [
+      'syncToken',
     ]),
     ...mapGetters('syncLocation', {
       syncLocations: 'current',
@@ -116,7 +116,7 @@ export default {
       return this.$store.getters['file/current'].name;
     },
     isSyncPossible() {
-      return this.$store.getters['data/loginToken'] ||
+      return this.syncToken ||
         this.$store.getters['syncLocation/current'].length;
     },
     googleDriveTokens() {
@@ -139,7 +139,10 @@ export default {
       return this.$store.dispatch('modal/open', 'syncManagement');
     },
     addGoogleDriveAccount() {
-      return googleHelper.addDriveAccount()
+      return this.$store.dispatch('modal/open', {
+        type: 'googleDriveAccount',
+        onResolve: () => googleHelper.addDriveAccount(!store.getters['data/localSettings'].googleDriveRestrictedAccess),
+      })
         .catch(() => {}); // Cancel
     },
     addDropboxAccount() {

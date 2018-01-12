@@ -26,7 +26,7 @@ export default {
     }
     return result;
   },
-  parseContent(serializedContent, syncLocation) {
+  parseContent(serializedContent, syncLocation = {}) {
     const result = utils.deepCopy(store.state.content.itemMap[`${syncLocation.fileId}/content`])
       || emptyContent();
     result.text = utils.sanitizeText(serializedContent);
@@ -51,19 +51,15 @@ export default {
         // Ignore
       }
     }
-    result.hash = utils.hash(utils.serializeObject({
-      ...result,
-      hash: undefined,
-    }));
-    return result;
+    return utils.addItemHash(result);
   },
   /**
    * Find and open a file location that fits the criteria
    */
   openFileWithLocation(allLocations, criteria) {
     return allLocations.some((location) => {
-        // If every field fits the criteria
-      if (Object.keys(criteria).every(key => criteria[key] === location[key])) {
+      // If every field fits the criteria
+      if (Object.entries(criteria).every(([key, value]) => value === location[key])) {
         // Found one location that fits, open it if it exists
         const file = store.state.file.itemMap[location.fileId];
         if (file) {

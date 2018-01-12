@@ -23,6 +23,7 @@ export default {
         config.resolve = (result) => {
           clean();
           if (config.onResolve) {
+            // Call onResolve immediately (mostly to prevent browsers from blocking popup windows)
             config.onResolve(result)
               .then(res => resolve(res));
           } else {
@@ -70,8 +71,18 @@ export default {
       content: '<p>Files in the trash are automatically deleted after 7 days of inactivity.</p>',
       resolveText: 'Ok',
     }),
+    fileRestoration: ({ dispatch }) => dispatch('open', {
+      content: '<p>You are about to revert some changes. Are you sure?</p>',
+      resolveText: 'Yes, revert',
+      rejectText: 'No',
+    }),
+    removeWorkspace: ({ dispatch }) => dispatch('open', {
+      content: '<p>You are about to remove a workspace locally. Are you sure?</p>',
+      resolveText: 'Yes, remove',
+      rejectText: 'No',
+    }),
     reset: ({ dispatch }) => dispatch('open', {
-      content: '<p>This will clean your local files and settings. Are you sure?</p>',
+      content: '<p>This will clean all your workspaces locally. Are you sure?</p>',
       resolveText: 'Yes, clean',
       rejectText: 'No',
     }),
@@ -81,18 +92,33 @@ export default {
       rejectText: 'Cancel',
       onResolve,
     }),
-    signInForSponsorship: ({ dispatch }) => dispatch('open', {
-      type: 'signInForSponsorship',
-      content: `<p>You have to sign in with <b>Google</b> to enable your sponsorship.</p>
-      <div class="modal__info"><b>Note:</b> This will sync all your files and settings.</div>`,
-      resolveText: 'Ok, sign in',
+    workspaceGoogleRedirection: ({ dispatch }, { onResolve }) => dispatch('open', {
+      content: '<p>StackEdit needs full Google Drive access to open this workspace.</p>',
+      resolveText: 'Ok, grant',
       rejectText: 'Cancel',
+      onResolve,
     }),
-    signInForComment: ({ dispatch }) => dispatch('open', {
-      content: `<p>You have to sign in with <b>Google</b> to start commenting.</p>
-      <div class="modal__info"><b>Note:</b> This will sync all your files and settings.</div>`,
+    signInForSponsorship: ({ dispatch }, { onResolve }) => dispatch('open', {
+      type: 'signInForSponsorship',
+      content: `<p>You have to sign in with Google to enable your sponsorship.</p>
+      <div class="modal__info"><b>Note:</b> This will sync your main workspace.</div>`,
       resolveText: 'Ok, sign in',
       rejectText: 'Cancel',
+      onResolve,
+    }),
+    signInForComment: ({ dispatch }, { onResolve }) => dispatch('open', {
+      content: `<p>You have to sign in with Google to start commenting.</p>
+      <div class="modal__info"><b>Note:</b> This will sync your main workspace.</div>`,
+      resolveText: 'Ok, sign in',
+      rejectText: 'Cancel',
+      onResolve,
+    }),
+    signInForHistory: ({ dispatch }, { onResolve }) => dispatch('open', {
+      content: `<p>You have to sign in with Google to enable revision history.</p>
+      <div class="modal__info"><b>Note:</b> This will sync your main workspace.</div>`,
+      resolveText: 'Ok, sign in',
+      rejectText: 'Cancel',
+      onResolve,
     }),
     sponsorOnly: ({ dispatch }) => dispatch('open', {
       content: '<p>This feature is restricted to <b>sponsor users</b> as it relies on server resources.</p>',

@@ -13,43 +13,38 @@
     <menu-entry @click.native="reset">
       <icon-logout slot="icon"></icon-logout>
       <div>Reset application</div>
-      <span>Sign out and clean local data.</span>
+      <span>Sign out and clean all workspaces.</span>
     </menu-entry>
     <hr>
+    <menu-entry @click.native="exportWorkspace">
+      <icon-content-save slot="icon"></icon-content-save>
+      Export workspace backup
+    </menu-entry>
     <input class="hidden-file" id="import-backup-file-input" type="file" @change="onImportBackup">
     <label class="menu-entry button flex flex--row flex--align-center" for="import-backup-file-input">
       <div class="menu-entry__icon flex flex--column flex--center">
         <icon-content-save></icon-content-save>
       </div>
       <div class="flex flex--column">
-        Import backup
+        Import workspace backup
       </div>
     </label>
-    <menu-entry href="#exportBackup=true" target="_blank">
-      <icon-content-save slot="icon"></icon-content-save>
-      Export backup
-    </menu-entry>
     <hr>
-    <menu-entry @click.native="about">
-      <icon-help-circle slot="icon"></icon-help-circle>
-      <span>About StackEdit</span>
-    </menu-entry>
-    <menu-entry @click.native="welcomeFile">
-      <icon-file slot="icon"></icon-file>
-      <span>Welcome file</span>
-    </menu-entry>
     <menu-entry href="editor" target="_blank">
       <icon-open-in-new slot="icon"></icon-open-in-new>
       <span>StackEdit 4 (deprecated)</span>
+    </menu-entry>
+    <menu-entry @click.native="about">
+      <icon-help-circle slot="icon"></icon-help-circle>
+      <span>About StackEdit</span>
     </menu-entry>
   </div>
 </template>
 
 <script>
 import MenuEntry from './common/MenuEntry';
-import localDbSvc from '../../services/localDbSvc';
 import backupSvc from '../../services/backupSvc';
-import welcomeFile from '../../data/welcomeFile.md';
+import utils from '../../services/utils';
 
 export default {
   components: {
@@ -72,6 +67,17 @@ export default {
         reader.readAsText(blob);
       }
     },
+    exportWorkspace() {
+      const url = utils.addQueryParams('app', {
+        ...utils.queryParams,
+        exportWorkspace: true,
+      }, true);
+      const iframeElt = utils.createHiddenIframe(url);
+      document.body.appendChild(iframeElt);
+      setTimeout(() => {
+        document.body.removeChild(iframeElt);
+      }, 60000);
+    },
     settings() {
       return this.$store.dispatch('modal/open', 'settings')
         .then(
@@ -88,17 +94,10 @@ export default {
     },
     reset() {
       return this.$store.dispatch('modal/reset')
-        .then(
-          () => localDbSvc.removeDb(),
-          () => {}, // Cancel
-        );
-    },
-    welcomeFile() {
-      return this.$store.dispatch('createFile', {
-        name: 'Welcome file',
-        text: welcomeFile,
-      })
-        .then(createdFile => this.$store.commit('file/setCurrentId', createdFile.id));
+        .then(() => {
+          location.href = '#reset=true';
+          location.reload();
+        });
     },
     about() {
       return this.$store.dispatch('modal/open', 'about');

@@ -1,4 +1,10 @@
-process.env.NODE_ENV = 'production';
+const env = require('./config/prod.env');
+
+Object.keys(env).forEach((key) => {
+  if (!process.env[key]) {
+    process.env[key] = JSON.parse(env[key]);
+  }
+});
 
 const http = require('http');
 const https = require('https');

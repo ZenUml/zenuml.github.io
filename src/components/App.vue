@@ -1,7 +1,7 @@
 <template>
-  <splash-screen v-if="!ready"></splash-screen>
-  <div v-else class="app">
-    <layout></layout>
+  <div class="app">
+    <splash-screen v-if="!ready"></splash-screen>
+    <layout v-else></layout>
     <modal v-if="showModal"></modal>
     <notification></notification>
   </div>
@@ -9,11 +9,13 @@
 
 <script>
 import Vue from 'vue';
-import { mapState } from 'vuex';
 import Layout from './Layout';
 // import Modal from './Modal';
 import Notification from './Notification';
 import SplashScreen from './SplashScreen';
+import syncSvc from '../services/syncSvc';
+import networkSvc from '../services/networkSvc';
+import sponsorSvc from '../services/sponsorSvc';
 import timeSvc from '../services/timeSvc';
 import store from '../store';
 
@@ -21,6 +23,10 @@ import store from '../store';
 Vue.directive('focus', {
   inserted(el) {
     el.focus();
+    const value = el.value;
+    if (value && el.setSelectionRange) {
+      el.setSelectionRange(0, value.length);
+    }
   },
 });
 
@@ -62,14 +68,28 @@ export default {
     Notification,
     SplashScreen,
   },
+  data: () => ({
+    ready: false,
+  }),
   computed: {
-    ...mapState([
-      'ready',
-    ]),
     showModal() {
       return false;
       // return !!this.$store.getters['modal/config'];
     },
+  },
+  created() {
+    syncSvc.init()
+      .then(() => {
+        networkSvc.init();
+        sponsorSvc.init();
+        this.ready = true;
+      })
+      .catch((err) => {
+        if (err && err.message !== 'reload') {
+          console.error(err); // eslint-disable-line no-console
+          this.$store.dispatch('notification/error', err);
+        }
+      });
   },
 };
 </script>

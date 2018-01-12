@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="layout" :class="{'layout--revision': revisionContent}">
     <div class="layout__panel flex flex--row" :class="{'flex--end': styles.showSideBar}">
       <div class="layout__panel layout__panel--explorer" v-show="styles.showExplorer" :aria-hidden="!styles.showExplorer" :style="{width: styles.layoutOverflow ? '100%' : constants.explorerWidth + 'px'}">
         <explorer></explorer>
@@ -75,6 +75,9 @@ export default {
     FindReplace,
   },
   computed: {
+    ...mapState('content', [
+      'revisionContent',
+    ]),
     ...mapState('discussion', [
       'stickyComment',
     ]),
@@ -138,7 +141,7 @@ export default {
 }
 
 .layout__panel--navigation-bar {
-  background-color: #2c2c2c;
+  background-color: $navbar-bg;
 }
 
 .layout__panel--status-bar {
@@ -155,11 +158,6 @@ $editor-background: #fff;
   .sticky-comment,
   .current-discussion {
     background-color: mix(#000, $editor-background, 6.7%);
-  }
-
-  .comment-list__current-discussion,
-  .sticky-comment,
-  .current-discussion {
     border-color: $editor-background;
   }
 }
@@ -177,11 +175,6 @@ $preview-background: #fafafa;
   .sticky-comment,
   .current-discussion {
     background-color: mix(#000, $preview-background, 6.7%);
-  }
-
-  .comment-list__current-discussion,
-  .sticky-comment,
-  .current-discussion {
     border-color: $preview-background;
   }
 }

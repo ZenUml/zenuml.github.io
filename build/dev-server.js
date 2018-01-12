@@ -1,9 +1,11 @@
 require('./check-versions')()
 
 var config = require('../config')
-if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
-}
+Object.keys(config.dev.env).forEach((key) => {
+  if (!process.env[key]) {
+    process.env[key] = JSON.parse(config.dev.env[key]);
+  }
+});
 
 var opn = require('opn')
 var path = require('path')
