@@ -53,7 +53,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     // you can customize output by editing /app.html
     // see https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: config.build.index,
+      filename: config.build.app,
       template: 'app-template.html',
       inject: true,
       minify: {

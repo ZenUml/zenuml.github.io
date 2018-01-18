@@ -12,9 +12,15 @@
       </button>
     </div>
     <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--button">
-      <a class="navigation-bar__button navigation-bar__button--stackedit button" v-title="'Get chrome extension'" :href="webStoreUrl">
+      <a class="navigation-bar__button navigation-bar__button--stackedit button" v-title="'Get the Chrome extension'" :href="webStoreUrl" target="_blank">
         <!--<icon-provider provider-id="stackedit"></icon-provider>-->
         <icon-provider provider-id="chrome"></icon-provider> CHROME EXTENSION
+      </a>
+    </div>
+    <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--button">
+      <a class="navigation-bar__button navigation-bar__button--stackedit button" v-title="'Buy me a coffee'" :href="buyMeACoffeeUrl" target="_blank">
+        <!--<icon-provider provider-id="stackedit"></icon-provider>-->
+        <icon-provider provider-id="coffee"></icon-provider> Buy me a coffee
       </a>
     </div>
     <div class="navigation-bar__inner navigation-bar__inner--right navigation-bar__inner--title flex flex--row">
@@ -112,6 +118,7 @@ export default {
     titleFocus: false,
     titleHover: false,
     webStoreUrl: 'https://chrome.google.com/webstore/detail/web-sequence/kcpganeflmhffnlofpdmcjklmdpbbmef',
+    buyMeACoffeeUrl: 'https://ko-fi.com/zenuml',
   }),
   computed: {
     ...mapState([

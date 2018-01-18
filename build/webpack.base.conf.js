@@ -86,7 +86,7 @@ module.exports = {
     }),
     new FaviconsWebpackPlugin({
       logo: resolve('src/assets/favicon.png'),
-      title: 'StackEdit',
+      title: 'ZenUML',
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(require('../package.json').version)

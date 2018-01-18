@@ -47,6 +47,10 @@ export default {
   background-image: url(../assets/iconGoogleChrome.svg);
 }
 
+.icon-provider--coffee {
+  background-image: url(../assets/cuplogo.svg);
+}
+
 .icon-provider--stackedit {
   background-image: url(../assets/iconStackedit.svg);
 }
