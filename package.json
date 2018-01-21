@@ -1,8 +1,8 @@
 {
-  "name": "stackedit",
+  "name": "zenuml",
   "version": "5.5.0",
-  "description": "Free, open-source, full-featured Markdown editor",
-  "author": "Benoit Schweblin",
+  "description": "Free, open-source, sequence diagram generator",
+  "author": "Peng Xiao",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/benweet/stackedit/issues"
