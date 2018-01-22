@@ -352,6 +352,12 @@ const editorSvc = Object.assign(new Vue(), editorSvcDiscussions, editorSvcUtils,
         sectionList,
       };
       store.dispatch('updateCode', { code: content });
+      if (window.ga) {
+        if (!window.ga.hasTrackedCoding) {
+          window.ga('send', 'event', 'fn', 'hasCode', 'editor', 1);
+          window.ga.hasTrackedCoding = true;
+        }
+      }
     });
     this.clEditor.undoMgr.on('undoStateChange', () => {
       const canUndo = this.clEditor.undoMgr.canUndo();
