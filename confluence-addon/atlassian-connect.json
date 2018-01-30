@@ -6,11 +6,11 @@
         "name": "ZenUML",
         "url": "https://www.zenuml.com/"
       },
-      "baseUrl": "https://zenuml.github.io/confluence-addon",
+      "baseUrl": "https://www.zenuml.com/confluence-addon",
       "enableLicensing": true,
       "links": {
-        "self": "https://zenuml.github.io/confluence-addon/atlassian.json",
-        "homepage": "https://zenuml.github.io/confluence-addon/atlassian.json"
+        "self": "https://www.zenuml.com/confluence-addon/atlassian.json",
+        "homepage": "https://www.zenuml.com/confluence-addon/atlassian.json"
       },
       "authentication": {
         "type": "none"
