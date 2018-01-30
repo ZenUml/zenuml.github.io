@@ -1,0 +1,58 @@
+    {
+      "key": "com.zenuml.confluence-addon",
+      "name": "ZenUML Sequence Diagram",
+      "description": "ZenUML Sequence Diagram add-on",
+      "vendor": {
+        "name": "ZenUML",
+        "url": "https://www.zenuml.com/"
+      },
+      "baseUrl": "https://zenuml.github.io/confluence-addon",
+      "enableLicensing": true,
+      "links": {
+        "self": "https://zenuml.github.io/confluence-addon/atlassian.json",
+        "homepage": "https://zenuml.github.io/confluence-addon/atlassian.json"
+      },
+      "authentication": {
+        "type": "none"
+      },
+      "scopes": [
+        "READ"
+      ],
+      "modules": {
+        "dynamicContentMacros": [
+          {
+            "key": "zenuml-sequence-macro",
+            "name": {
+              "value": "ZenUML Sequence Diagram"
+            },
+            "url": "/view.html?pageId={page.id}&pageVersion={page.version}&macroId={macro.id}",
+            "description": {
+              "value": "Create a ZenUML Sequence Diagram"
+            },
+            "outputType": "block",
+            "bodyType": "plain-text",
+	    "editor": {
+		    "url": "/edit.html",
+		    "editTitle": {
+			    "value": "Edit Sequence Diagram"
+		    },
+		    "insertTitle": {
+			    "value": "Create Sequence Diagram"
+		    },
+		    "width": "1240px",
+		    "height": "500px"
+	    },
+	    "icon": {
+		    "width": 16,
+		    "height": 16,
+		    "url": "image/zenuml_logo.png"
+	    },
+	    "documentation": {
+	    	"url": "https://www.zenuml.com/ZenUML_Sequence_Diagram_addon_help.html"
+	    },
+	    "categories": [ "visuals" ],
+	    "featured": true
+          }
+        ]
+      }
+    }

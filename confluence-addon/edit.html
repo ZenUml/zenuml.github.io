@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/edit.css"></link>
+    <script type="text/javascript" src="/js/util.js"></script>
+    <script id="connect-loader">
+      var EXAMPLE = '//Here is an example\n' + 
+      '//Replace it with your own sequence\n' +
+      'BookController.getBook(id) {\n' +
+	'  bookDto = BookService.getBook(id) {\n' +
+	  '    bookEntity = BookRepository.findOne(id)\n' +
+	  '    bookDto = BookConverter.convert(bootEntity)\n' +
+	  '  }\n' +
+	'}';
+
+      function initializeMacro() {
+	AP.confluence.getMacroBody(function(body) {
+	  if(!body) {
+	    body = EXAMPLE;
+	  }
+	  window.app.$store.commit('code', body);
+	});
+
+	AP.require(["confluence", "dialog"], function (confluence, dialog) {
+	  function onSubmit() {
+	    var macroParams = {};
+	    var macroBody = app.$store.state.code;
+	    confluence.saveMacro(macroParams, macroBody);
+	    confluence.closeMacroEditor();
+	    return true;
+	  }
+
+	  dialog.getButton("submit").bind(onSubmit);
+	});
+      }
+
+      function loadConnect() {
+	JavaScript.load(getConnectUrl(), initializeMacro);
+      }
+      window.onAppLoaded = loadConnect;
+    </script>
+  </head>
+  <body>
+    <div id="workspace" class="container">
+      <div id="editor" class="split">
+	<div class="hint" style="padding-left: 19px">Create a sequence diagram here. <a target="_blank" href='https://www.zenuml.com/ZenUML_Sequence_Diagram_addon_help.html'>Documentation</a></div>
+	<editor></editor>
+      </div>
+      <div id="diagram" class="split">
+	<seq-diagram></seq-diagram>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="/js/bundle.js"></script>
+    <script>                   
+      function render() {
+	Split(['#editor', '#diagram'], { sizes: [35, 65] });
+      }
+      document.addEventListener("DOMContentLoaded", function(event) { render() });
+    </script>
+  </body>
+</html>
