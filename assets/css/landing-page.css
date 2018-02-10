@@ -1673,7 +1673,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#de8e0009', e
     text-align: center;
   }
   .landing-page .navbar-top{
-    background: rgba(0, 0, 0, 0.75);
+    background: #424656;
   }
 
   .landing-page .parallax .parallax-background img {
