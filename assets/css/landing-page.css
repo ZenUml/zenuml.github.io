@@ -935,7 +935,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#232526', end
 
 }
 .filter-gradient.blue:after{
-    background: radial-gradient(ellipse at center,  #2a78ff 0%,#2a78ff  0%,#2a78ff 100%,#2a78ff 100%,#2a78ff 100%,#2a78ff 100%,#2a78ff 100%); /* W3C */
+  background-image: linear-gradient(to left top, #56ccf2, #25bbf5, #00a9f6, #0096f4, #2f80ed);
 }
 .filter-gradient.green:after{
 /* IE9 SVG, needs conditional override of 'filter' to 'none' */
