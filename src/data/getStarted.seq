@@ -1,5 +1,3 @@
-// NEW FEATURE - @Starter
-// User @Starter to set who starts this sequence
 @Starter(Browser)
 Controller.getBook(id) {
   Book b = service:BookService.get(id)
