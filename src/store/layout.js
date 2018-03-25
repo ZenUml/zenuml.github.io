@@ -62,7 +62,7 @@ function computeStyles(state, getters, layoutSettings = getters['data/layoutSett
 
   if (styles.showSidePreview && doublePanelWidth / 2 < constants.editorMinWidth) {
     styles.showSidePreview = false;
-    styles.showPreview = false;
+    styles.showPreview = true;
     styles.layoutOverflow = false;
     return computeStyles(state, getters, layoutSettings, styles);
   }
