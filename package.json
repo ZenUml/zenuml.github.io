@@ -11,6 +11,8 @@
   "scripts": {
     "postinstall": "gulp build-prism",
     "start": "node build/dev-server.js",
+    "update-core": "yarn unlink vue-sequence && yarn add vue-sequence",
+    "release-preview": "yarn build && http-server .",
     "build": "node build/build.js && npm run build-style",
     "build-style": "webpack --config build/webpack.style.conf.js",
     "lint": "eslint --ext .js,.vue src server",
@@ -52,7 +54,7 @@
     "tmp": "^0.0.33",
     "vue": "^2.3.3",
     "vue-codemirror": "^3.1.8",
-    "vue-sequence": "^0.5.11",
+    "vue-sequence": "^0.5.13",
     "vuex": "^2.3.1"
   },
   "devDependencies": {

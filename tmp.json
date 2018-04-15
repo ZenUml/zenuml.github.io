@@ -1,0 +1,1057 @@
+{"product" : {
+"dssProduct": {
+"refNo": "ITM1804-000026",
+"itemNo": "CROP2",
+"itemDescription": "Basic Bra",
+"itemNotesAndInstructions": null,
+"version": 16,
+"documentStatus": "active",
+"workFlowStatus": "Adopted",
+"integrationStatus": "Registered"
+},
+"familyTree": {
+"department": {
+"code": "008",
+"name": "GIRLSWEAR SZS 7-14"
+},
+"family": {
+"code": "002",
+"name": "SEASONAL TOPS"
+},
+"class": {
+"code": "002",
+"name": "KNITWEAR&#47;JACKETS"
+},
+"subClass": null,
+"subSubClass": null
+},
+"isSet": false,
+"abbreviatedDescription": "Bra",
+"pluDescription": "Bra",
+"brandDescription": "NOW",
+"year": 2018,
+"season": {
+"code": "N",
+"name": "Non-Seasonal"
+},
+"keycodeType": "Style",
+"styleNumber": 34588,
+"onShowDate": "2018-05-05",
+"offShowDate": "9999-12-31",
+"countryOfOrigin": {
+"code": "CN",
+"name": "CN-China"
+},
+"isCarryThrough": false,
+"shelfLifeDays": null,
+"minShelfLifeDays": null,
+"sellingUnit": {
+"code": "EA",
+"name": "EACH"
+},
+"replenishmentMethod": {
+"code": "N",
+"name": "Non-Replenished"
+},
+"orderLine": {
+"code": "W",
+"name": "Warehouse"
+},
+"instorePresentation": {
+"code": "H",
+"name": "Hang"
+},
+"brand": {
+"brandType": {
+"code": "PRV",
+"name": "Private"
+},
+"brandLabel": {
+"code": "NOW_9959",
+"name": "NOW"
+}
+},
+"isSecurityTagged": false,
+"isForReOrder": false,
+"isAllocated": true,
+"isDcReplenished": false,
+"hanger": {
+"code": null,
+"name": null
+},
+"basicStock": {
+"code": "0",
+"name": "0"
+},
+"priceTiering": {
+"code": "M",
+"name": "M-OPP"
+},
+"age Grading:": null,
+"gradeCode": "C",
+"isOrderedAsAssortment": false,
+"isPrePriced": true,
+"fixtureType": {
+"code": "R",
+"name": "Regular"
+},
+"isKeyVolumeLine": false,
+"isPriceTagged": true,
+"priceMethod": {
+"code": "CL",
+"name": "Climatic"
+},
+"piecesPerGarment": 1,
+"tagType": {
+"code": "01",
+"name": "Normal Tag"
+},
+"similarStyleOrKeycode": null,
+"styleOrKeycodeToReplace": null,
+"estimatedWeeklySales": null,
+"isDcConveyable": true,
+"warningsAndHazards": {
+"poisonsSchedule": null,
+"dangerousGoodsClass": null,
+"dangerousGoodsNumber": null,
+"dangerousGoodsPack": null,
+"hazardousChemicals": null,
+"flammability": {
+"code": "0",
+"name": "Not Applicable"
+}
+},
+"distributionMethod": {
+"code": "REG",
+"name": "Regional"
+},
+"sizeType": {
+"code": "17",
+"name": "A04 - WOMENS SIZES APPARE",
+"description": null,
+"category": 9
+},
+"options": [
+{
+"id": "15768f2473ec49cb85ea9ad627dee3af",
+"sequence": 1,
+"primaryColour": {
+"code": "700",
+"name": "BEIGE"
+},
+"secondaryColour": {
+"code": null,
+"name": "BEIGE"
+},
+"colourDescription": "BEIGE",
+"sizes": [
+{
+"size": {
+"code": "978",
+"name": "SIZE 10",
+"sortSequence": 30
+},
+"keycodeNumber": 60104724,
+"apn": 9300802487247,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "982",
+"name": "SIZE 14",
+"sortSequence": 50
+},
+"keycodeNumber": 60104748,
+"apn": 9300802487261,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "980",
+"name": "SIZE 12",
+"sortSequence": 40
+},
+"keycodeNumber": 60104731,
+"apn": 9300802487254,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "983",
+"name": "SIZE 16",
+"sortSequence": 60
+},
+"keycodeNumber": 60104755,
+"apn": 9300802487278,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+}
+]
+},
+{
+"id": "56406248d6d34d08ae6d8516fd84fa89",
+"sequence": 2,
+"primaryColour": {
+"code": "150",
+"name": "WHITE"
+},
+"secondaryColour": {
+"code": null,
+"name": "WHITE"
+},
+"colourDescription": "WHITE",
+"sizes": [
+{
+"size": {
+"code": "980",
+"name": "SIZE 12",
+"sortSequence": 40
+},
+"keycodeNumber": 60104779,
+"apn": 9300802487292,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "978",
+"name": "SIZE 10",
+"sortSequence": 30
+},
+"keycodeNumber": 60104762,
+"apn": 9300802487285,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "983",
+"name": "SIZE 16",
+"sortSequence": 60
+},
+"keycodeNumber": 60104793,
+"apn": 9300802487315,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "982",
+"name": "SIZE 14",
+"sortSequence": 50
+},
+"keycodeNumber": 60104786,
+"apn": 9300802487308,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+}
+]
+},
+{
+"id": "c273d1c3ab664e89a8911e3de021336c",
+"sequence": 3,
+"primaryColour": {
+"code": "100",
+"name": "BLACK"
+},
+"secondaryColour": {
+"code": null,
+"name": "BLACK"
+},
+"colourDescription": "BLACK",
+"sizes": [
+{
+"size": {
+"code": "978",
+"name": "SIZE 10",
+"sortSequence": 30
+},
+"keycodeNumber": 60104809,
+"apn": 9300802487322,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "980",
+"name": "SIZE 12",
+"sortSequence": 40
+},
+"keycodeNumber": 60104816,
+"apn": 9300802487339,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "982",
+"name": "SIZE 14",
+"sortSequence": 50
+},
+"keycodeNumber": 60104823,
+"apn": 9300802487346,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+},
+{
+"size": {
+"code": "983",
+"name": "SIZE 16",
+"sortSequence": 60
+},
+"keycodeNumber": 60104830,
+"apn": 9300802487353,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "4",
+"name": "Allocated"
+},
+"newZealand": {
+"code": "4",
+"name": "Allocated"
+}
+}
+}
+]
+},
+{
+"id": "edace10f97a14fae819d0702037e64cb",
+"sequence": 4,
+"primaryColour": {
+"code": "350",
+"name": "BLUE"
+},
+"secondaryColour": {
+"code": null,
+"name": "BLUE"
+},
+"colourDescription": "BLUE",
+"sizes": [
+{
+"size": {
+"code": "978",
+"name": "SIZE 10",
+"sortSequence": 30
+},
+"keycodeNumber": 60104922,
+"apn": 9300802487445,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "0",
+"name": "Live"
+},
+"newZealand": {
+"code": "0",
+"name": "Live"
+}
+}
+},
+{
+"size": {
+"code": "983",
+"name": "SIZE 16",
+"sortSequence": 60
+},
+"keycodeNumber": 60104953,
+"apn": 9300802487476,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "0",
+"name": "Live"
+},
+"newZealand": {
+"code": "0",
+"name": "Live"
+}
+}
+},
+{
+"size": {
+"code": "982",
+"name": "SIZE 14",
+"sortSequence": 50
+},
+"keycodeNumber": 60104946,
+"apn": 9300802487469,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "0",
+"name": "Live"
+},
+"newZealand": {
+"code": "0",
+"name": "Live"
+}
+}
+},
+{
+"size": {
+"code": "980",
+"name": "SIZE 12",
+"sortSequence": 40
+},
+"keycodeNumber": 60104939,
+"apn": 9300802487452,
+"sellPrices": {
+"australia": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 4.5455,
+"priceIncGst": 5.00
+}
+],
+"new Zealand": [
+{
+"effectiveDate": "2018-04-10",
+"endDate": "9999-12-31",
+"priceExGst": 5.2174,
+"priceIncGst": 6.00
+}
+]
+},
+"productStatus": {
+"australia": {
+"code": "0",
+"name": "Live"
+},
+"newZealand": {
+"code": "0",
+"name": "Live"
+}
+}
+}
+]
+}
+],
+"flexibleAttributes": [
+
+],
+"requirements": [
+
+],
+"materials": [
+
+],
+"careInstructions": [
+{
+"instructionCode": "LABEL1709-000001",
+"instructionType": "Care Instruction",
+"image": null,
+"description": null,
+"instruction": null,
+"customer": "KMART"
+}
+],
+"currentSourcingSummary": {
+"dssSourcingRecord": {
+"refNo": "SOR1804-000023",
+"version": 6,
+"workFlowStatus": "Buyer Accept"
+},
+"vendor": {
+"code": "V000252",
+"name": "SHANGHAI SPEED INC",
+"status": "Active",
+"locality": "Overseas",
+"incoterms": "FOB",
+"methodOfTransport": {
+"code": "SEA",
+"name": "Sea"
+},
+"packType": {
+"code": "F",
+"name": "Flat"
+}
+},
+"factories": [
+{
+"code": "F100158",
+"name": "Test China - Shanghai",
+"countryOfOrigin": {
+"code": "CN",
+"name": "China"
+},
+"portOfLoading": {
+"code": "CNSHA",
+"name": "Shanghai"
+}
+}
+],
+"kmartSuppliers": {
+"australia": {
+"supplierNumber": 514484,
+"agentNumber": 509084,
+"agentName": "COLES GROUP ASIA (SHANGHAI)        ",
+"isKasAgent": true
+},
+"newZealand": {
+"supplierNumber": 514484,
+"agentNumber": 509084,
+"agentName": "COLES GROUP ASIA (SHANGHAI)        ",
+"isKasAgent": true
+}
+},
+"homeCost": {
+"cost": 5.00000,
+"currency": "USD"
+},
+"productLeadTimeDays": 50,
+"isFullContainerShipment": false,
+"containerQuantity": null,
+"unitsPerInner": 10,
+"innersPerOuter": 1,
+"totalCartonQuantity": 10,
+"isShelfReadyShipper": null,
+"packType": {
+"code": "F",
+"name": "Flat"
+},
+"minimumOrderQuantity": 0,
+"minimumOrderQuantityType": {
+"code": "U",
+"name": "Units"
+},
+"destinationCostAndSell": {
+"australia": {
+"currency": "AUD",
+"gstPercentage": 9.0,
+"elcExGst": 7.11810,
+"elcIncGst": 7.82990,
+"sellPriceExGst": 4.54550,
+"sellPriceIncGst": 5.00000,
+"marginPercentage": -0.56598
+},
+"newZealand": {
+"currency": "NZD",
+"gstPercentage": 13.0,
+"elcExGst": 7.50360,
+"elcIncGst": 8.62910,
+"sellPriceExGst": 5.21740,
+"sellPriceIncGst": 6.00000,
+"marginPercentage": -0.4381833333333333333333333333
+}
+}
+},
+"sourcingRecords": [
+{
+"dssSourcingRecord": {
+"refNo": "SOR1804-000023",
+"version": 6,
+"workFlowStatus": "Buyer Accept"
+},
+"isDefaultSourcingRecord": true,
+"sourcingAgent": {
+"code": "KAS_HK",
+"name": "KAS - Hong Kong"
+},
+"kmartSuppliers": {
+"australia": {
+"supplierNumber": 514484,
+"agentNumber": 509084,
+"agentName": "COLES GROUP ASIA (SHANGHAI)        ",
+"isKasAgent": true
+},
+"newZealand": {
+"supplierNumber": 514484,
+"agentNumber": 509084,
+"agentName": "COLES GROUP ASIA (SHANGHAI)        ",
+"isKasAgent": true
+}
+},
+"factories": [
+{
+"code": "F100158",
+"name": "Test China - Shanghai",
+"countryOfOrigin": {
+"code": "CN",
+"name": "China"
+},
+"portOfLoading": {
+"code": "CNSHA",
+"name": "Shanghai"
+}
+}
+],
+"vendor": {
+"code": "V000252",
+"name": "SHANGHAI SPEED INC",
+"status": "Active",
+"locality": "Overseas",
+"incoterms": "FOB",
+"methodOfTransport": {
+"code": "SEA",
+"name": "Sea"
+},
+"packType": {
+"code": "F",
+"name": "Flat"
+}
+},
+"targetUnitCost": {
+"cost": null,
+"currency": "USD"
+},
+"quotes": [
+{
+"dssQuote": {
+"refNo": "QTE1804-000021",
+"version": 7,
+"workFlowStatus": "Buyer Accept"
+},
+"vendor": {
+"code": "V000252",
+"name": "SHANGHAI SPEED INC",
+"status": "Active",
+"locality": "Overseas",
+"incoterms": "FOB",
+"methodOfTransport": {
+"code": "SEA",
+"name": "Sea"
+},
+"packType": {
+"code": "F",
+"name": "Flat"
+}
+},
+"factory": {
+"code": "F100158",
+"name": "Test China - Shanghai",
+"countryOfOrigin": {
+"code": "CN",
+"name": "China"
+},
+"portOfLoading": {
+"code": "CNSHA",
+"name": "Shanghai"
+}
+},
+"isEffectiveNow": true,
+"quoteEffectiveDate": "2018-04-07",
+"effectiveDate": "2018-04-06",
+"endDate": "9999-12-31",
+"homeCost": {
+"cost": 5.00000,
+"currency": "USD"
+},
+"productLeadTimeDays": 50,
+"isFullContainerShipment": false,
+"isTransTasmanShipment": false,
+"containerQuantity": null,
+"destinationCost": {
+"australia": {
+"currency": "AUD",
+"gstPercentage": 9.0,
+"elcExGst": 7.11810,
+"elcIncGst": 7.82990
+},
+"newZealand": {
+"currency": "NZD",
+"gstPercentage": 13.0,
+"elcExGst": 7.50360,
+"elcIncGst": 8.62910
+}
+},
+"unitsPerInner": 10,
+"innersPerOuter": 1,
+"totalCartonQuantity": 10,
+"minimumOrderQuantity": 0,
+"minimumOrderQuantityType": {
+"code": "U",
+"name": "Units"
+},
+"isHazardous": false,
+"cartons": [
+{
+"type": "Instore",
+"height": 10.00000,
+"width": 10.00000,
+"depth": 10.00000,
+"weight": 1.00000
+},
+{
+"type": "Outer",
+"height": 10.00000,
+"width": 10.00000,
+"depth": 10.00000,
+"weight": 1.00000
+},
+{
+"type": "Outer",
+"height": 10.00000,
+"width": 10.00000,
+"depth": 10.00000,
+"weight": 1.00000
+}
+]
+}
+]
+}
+]
+},
+"metadata": {
+"environment": null,
+"date": "2018-04-09T12:50:15.9863056+10:00"
+}
+}
