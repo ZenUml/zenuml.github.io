@@ -6468,9 +6468,9 @@ sequence-parser@^0.4.8:
   dependencies:
     antlr4 "^4.7.0"
 
-sequence-parser@^0.5.8:
-  version "0.5.8"
-  resolved "https://registry.yarnpkg.com/sequence-parser/-/sequence-parser-0.5.8.tgz#9cbd39807fadab4e049e9e8049cfffa1c7708f77"
+sequence-parser@^0.5.9:
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/sequence-parser/-/sequence-parser-0.5.9.tgz#0b33c03cdcebab14244a85120785eb48bf7e02c8"
   dependencies:
     antlr4 "^4.7.0"
     webpack "^3.11.0"
@@ -7440,14 +7440,14 @@ vue-loader@^12.1.0:
     vue-style-loader "^3.0.0"
     vue-template-es2015-compiler "^1.2.2"
 
-vue-sequence@^0.5.16:
-  version "0.5.16"
-  resolved "https://registry.yarnpkg.com/vue-sequence/-/vue-sequence-0.5.16.tgz#a708c07155f382d300ecc034a7f4a8300b948f28"
+vue-sequence@^0.5.17:
+  version "0.5.17"
+  resolved "https://registry.yarnpkg.com/vue-sequence/-/vue-sequence-0.5.17.tgz#7e98b1c51a06b0e979cddc2d797fdf6cb1dca09f"
   dependencies:
     babel-polyfill "^6.26.0"
     karma-chrome-launcher "^2.2.0"
     node-uuid "^1.4.8"
-    sequence-parser "^0.5.8"
+    sequence-parser "^0.5.9"
     uuid "^3.2.1"
     vue "^2.3.3"
     vuex "^2.4.0"
