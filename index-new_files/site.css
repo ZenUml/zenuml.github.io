@@ -1732,14 +1732,14 @@ dl dd {
   .algolia-autocomplete .algolia-docsearch-suggestion--content:before {
     display: none
   }
+
+  .hero-banner-container {
+    display: none
+  }
 }
 
 .hero {  background: #333;
   text-align: center
-}
-
-.hero-banner-container {
-  display: none
 }
 
 @media screen and (min-width: 40em) {
